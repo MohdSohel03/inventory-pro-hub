@@ -1,6 +1,5 @@
-import { Package, AlertTriangle, DollarSign, ShoppingCart, TrendingUp, Layers } from "lucide-react";
+import { Package, AlertTriangle, DollarSign, ShoppingCart, TrendingUp } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
-import { PageHeader } from "@/components/PageHeader";
 import { mockSalesTrend, mockCategoryDistribution, mockStockStatus, mockProducts, mockSales } from "@/lib/mock-data";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -20,13 +19,11 @@ const Dashboard = () => {
   const totalValue = mockProducts.reduce((s, p) => s + p.stock * p.selling_price, 0);
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
-      <PageHeader title="Dashboard" subtitle="Manage your inventory in real-time" />
-
+    <div className="p-4 sm:p-6 max-w-[1400px] mx-auto">
       {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
         <StatCard title="Total Products" value={mockProducts.length} subtitle="In catalog" icon={<Package className="w-5 h-5" />} />
-        <StatCard title="Low Stock Alerts" value={lowStockCount} subtitle="Items need restocking" icon={<AlertTriangle className="w-5 h-5" />} iconColor="text-warning" />
+        <StatCard title="Low Stock Alerts" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-5 h-5" />} iconColor="text-warning" />
         <StatCard title="Total Value" value={`₹${totalValue.toLocaleString("en-IN")}`} trend="↑ 8% from last month" icon={<DollarSign className="w-5 h-5" />} />
         <StatCard title="Total Sales" value={mockSales.length} trend="↑ 12% from last month" icon={<ShoppingCart className="w-5 h-5" />} />
         <StatCard title="Profit Margin" value="24.5%" subtitle="Avg. across products" icon={<TrendingUp className="w-5 h-5" />} iconColor="text-success" />
@@ -34,7 +31,6 @@ const Dashboard = () => {
 
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        {/* Sales Trend */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-4">Sales & Purchases Trend</h3>
           <ResponsiveContainer width="100%" height={280}>
@@ -53,7 +49,6 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Category Distribution Pie */}
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-4">Category Distribution</h3>
           <ResponsiveContainer width="100%" height={280}>
@@ -72,7 +67,6 @@ const Dashboard = () => {
 
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        {/* Stock Status Pie */}
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-4">Stock Status</h3>
           <ResponsiveContainer width="100%" height={250}>
@@ -88,7 +82,6 @@ const Dashboard = () => {
           </ResponsiveContainer>
         </div>
 
-        {/* Top Products Bar */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-4">Top Selling Products</h3>
           <ResponsiveContainer width="100%" height={250}>

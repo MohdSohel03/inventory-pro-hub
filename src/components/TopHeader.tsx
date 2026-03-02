@@ -1,11 +1,11 @@
-import { Bell, Menu, User, LogOut, Settings } from "lucide-react";
+import { Bell, Menu, User, LogOut, Settings, Sun, Moon } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuSeparator, DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const notifications = [
   { id: 1, text: "Ergonomic Office Chair is low on stock", time: "2 min ago" },
@@ -14,19 +14,38 @@ const notifications = [
   { id: 4, text: "Monthly report is ready", time: "1 day ago" },
 ];
 
+const pageTitles: Record<string, { title: string; subtitle?: string }> = {
+  "/": { title: "Dashboard", subtitle: "Manage your inventory in real-time" },
+  "/products": { title: "Products", subtitle: "Manage your product catalog" },
+  "/suppliers": { title: "Suppliers", subtitle: "Manage your suppliers" },
+  "/purchases": { title: "Purchases", subtitle: "Track purchase orders" },
+  "/sales": { title: "Sales", subtitle: "Track sales transactions" },
+  "/reports": { title: "Reports", subtitle: "Analytics and insights" },
+  "/stock-alerts": { title: "Stock Alerts" },
+  "/settings": { title: "Settings", subtitle: "Manage your preferences" },
+  "/profile": { title: "Profile", subtitle: "Your account details" },
+};
+
 interface TopHeaderProps {
   onMenuClick: () => void;
 }
 
 export function TopHeader({ onMenuClick }: TopHeaderProps) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const pageInfo = pageTitles[location.pathname] || { title: "StockPilot" };
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
-      <button onClick={onMenuClick} className="lg:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
-        <Menu className="w-5 h-5" />
-      </button>
-      <div className="lg:block hidden" />
+      <div className="flex items-center gap-3">
+        <button onClick={onMenuClick} className="lg:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+          <Menu className="w-5 h-5" />
+        </button>
+        <div>
+          <h1 className="text-lg font-bold text-foreground leading-tight">{pageInfo.title}</h1>
+          {pageInfo.subtitle && <p className="text-xs text-muted-foreground hidden sm:block">{pageInfo.subtitle}</p>}
+        </div>
+      </div>
 
       <div className="flex items-center gap-2">
         {/* Notifications */}
@@ -67,7 +86,7 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
               <p className="text-xs text-muted-foreground">admin@stockpilot.com</p>
             </div>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/settings")}>
+            <DropdownMenuItem onClick={() => navigate("/profile")}>
               <User className="w-4 h-4 mr-2" /> Profile
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => navigate("/settings")}>

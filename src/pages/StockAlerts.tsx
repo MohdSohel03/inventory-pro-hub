@@ -1,4 +1,3 @@
-import { PageHeader } from "@/components/PageHeader";
 import { mockProducts } from "@/lib/mock-data";
 import { AlertTriangle, Package } from "lucide-react";
 
@@ -7,7 +6,7 @@ const StockAlerts = () => {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
-      <PageHeader title="Stock Alerts" subtitle={`${lowStock.length} products need attention`} />
+      
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {lowStock.map(p => (

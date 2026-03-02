@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
 import { mockSalesTrend, mockProducts } from "@/lib/mock-data";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -24,7 +23,7 @@ const Reports = () => {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
-      <PageHeader title="Reports" subtitle="Analytics and insights" />
+      
 
       {/* Controls */}
       <div className="flex flex-wrap gap-3 mb-6">
