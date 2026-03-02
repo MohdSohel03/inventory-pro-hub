@@ -11,6 +11,8 @@ import Purchases from "./pages/Purchases";
 import Sales from "./pages/Sales";
 import Reports from "./pages/Reports";
 import StockAlerts from "./pages/StockAlerts";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -21,18 +23,24 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <AppLayout>
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/suppliers" element={<Suppliers />} />
-            <Route path="/purchases" element={<Purchases />} />
-            <Route path="/sales" element={<Sales />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/stock-alerts" element={<StockAlerts />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AppLayout>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="*" element={
+            <AppLayout>
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/products" element={<Products />} />
+                <Route path="/suppliers" element={<Suppliers />} />
+                <Route path="/purchases" element={<Purchases />} />
+                <Route path="/sales" element={<Sales />} />
+                <Route path="/reports" element={<Reports />} />
+                <Route path="/stock-alerts" element={<StockAlerts />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </AppLayout>
+          } />
+        </Routes>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
