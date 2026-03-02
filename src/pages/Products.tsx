@@ -61,11 +61,9 @@ const Products = () => {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
-      <PageHeader
-        title="Products"
-        subtitle="Manage your product catalog"
-        action={<Button onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Product</Button>}
-      />
+      <div className="flex items-center justify-end mb-4">
+        <Button onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Product</Button>
+      </div>
 
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">

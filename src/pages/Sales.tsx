@@ -35,7 +35,9 @@ const Sales = () => {
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
-      <PageHeader title="Sales" subtitle="Track sales transactions" action={<Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-2" />Create Sale</Button>} />
+      <div className="flex items-center justify-end mb-4">
+        <Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-2" />Create Sale</Button>
+      </div>
 
       <div className="relative max-w-md mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
