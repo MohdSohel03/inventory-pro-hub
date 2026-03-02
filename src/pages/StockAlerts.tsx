@@ -1,12 +1,24 @@
-import { mockProducts } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
 import { AlertTriangle, Package } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 const StockAlerts = () => {
-  const lowStock = mockProducts.filter(p => p.stock <= p.min_stock);
+  const { user } = useAuth();
+  const [lowStock, setLowStock] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("products").select("*").eq("user_id", user.id).then(({ data }) => {
+      if (data) setLowStock(data.filter(p => p.stock <= p.min_stock));
+    });
+  }, [user]);
 
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
-      
+      {lowStock.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">All products are well stocked! No alerts.</div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {lowStock.map(p => (

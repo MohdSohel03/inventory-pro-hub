@@ -1,32 +1,67 @@
-import { useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
-import { mockPurchases, mockSuppliers, mockProducts } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Search, Trash2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Purchases = () => {
-  const [purchases, setPurchases] = useState(mockPurchases);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [purchases, setPurchases] = useState<any[]>([]);
+  const [suppliers, setSuppliers] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [supplier, setSupplier] = useState("");
   const [items, setItems] = useState([{ product: "", quantity: 1, cost: 0 }]);
+  const [saving, setSaving] = useState(false);
 
-  const filtered = purchases.filter(p => p.supplier.toLowerCase().includes(search.toLowerCase()));
+  const fetchData = async () => {
+    if (!user) return;
+    const [purch, suppl, prods] = await Promise.all([
+      supabase.from("purchases").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("suppliers").select("*").eq("user_id", user.id),
+      supabase.from("products").select("*").eq("user_id", user.id),
+    ]);
+    if (purch.data) setPurchases(purch.data);
+    if (suppl.data) setSuppliers(suppl.data);
+    if (prods.data) setProducts(prods.data);
+  };
+
+  useEffect(() => { fetchData(); }, [user]);
+
+  const filtered = purchases.filter(p => p.supplier_name.toLowerCase().includes(search.toLowerCase()));
   const total = items.reduce((s, i) => s + i.quantity * i.cost, 0);
 
   const addItem = () => setItems([...items, { product: "", quantity: 1, cost: 0 }]);
   const removeItem = (idx: number) => setItems(items.filter((_, i) => i !== idx));
   const updateItem = (idx: number, field: string, value: any) => setItems(items.map((item, i) => i === idx ? { ...item, [field]: value } : item));
 
-  const handleSave = () => {
-    setPurchases([{ id: Date.now(), supplier, date: new Date().toISOString().split("T")[0], items: items.length, total, status: "Pending" }, ...purchases]);
-    setShowAdd(false);
-    setSupplier("");
-    setItems([{ product: "", quantity: 1, cost: 0 }]);
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    const { error } = await supabase.from("purchases").insert({
+      user_id: user.id,
+      supplier_name: supplier,
+      date: new Date().toISOString().split("T")[0],
+      items: items.length,
+      total,
+      status: "Pending",
+    });
+    setSaving(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setShowAdd(false);
+      setSupplier("");
+      setItems([{ product: "", quantity: 1, cost: 0 }]);
+      fetchData();
+    }
   };
 
   return (
@@ -50,12 +85,15 @@ const Purchases = () => {
             </tr>
           </thead>
           <tbody>
+            {filtered.length === 0 && (
+              <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">No purchases yet.</td></tr>
+            )}
             {filtered.map(p => (
               <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                <td className="py-3 px-4 font-medium text-foreground">{p.supplier}</td>
+                <td className="py-3 px-4 font-medium text-foreground">{p.supplier_name}</td>
                 <td className="py-3 px-4">{p.date}</td>
                 <td className="py-3 px-4 text-center">{p.items}</td>
-                <td className="py-3 px-4 font-mono">₹{p.total.toLocaleString("en-IN")}</td>
+                <td className="py-3 px-4 font-mono">₹{Number(p.total).toLocaleString("en-IN")}</td>
                 <td className="py-3 px-4"><span className={p.status === "Received" ? "status-in-stock" : "status-low-stock"}>{p.status}</span></td>
               </tr>
             ))}
@@ -72,7 +110,7 @@ const Purchases = () => {
               <Select value={supplier} onValueChange={setSupplier}>
                 <SelectTrigger><SelectValue placeholder="Select supplier" /></SelectTrigger>
                 <SelectContent>
-                  {mockSuppliers.map(s => <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>)}
+                  {suppliers.map(s => <SelectItem key={s.id} value={s.name}>{s.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -82,9 +120,9 @@ const Purchases = () => {
                 {items.map((item, i) => (
                   <div key={i} className="flex gap-2 items-end">
                     <div className="flex-1">
-                      <Select value={item.product} onValueChange={v => { const p = mockProducts.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "cost", p.cost_price); }}>
+                      <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "cost", Number(p.cost_price)); }}>
                         <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
-                        <SelectContent>{mockProducts.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
+                        <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
@@ -98,7 +136,7 @@ const Purchases = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Create Purchase</Button>
+            <Button onClick={handleSave} disabled={saving}>{saving ? "Creating..." : "Create Purchase"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

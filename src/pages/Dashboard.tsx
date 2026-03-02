@@ -1,102 +1,154 @@
+import { useState, useEffect } from "react";
 import { Package, AlertTriangle, DollarSign, ShoppingCart, TrendingUp } from "lucide-react";
 import { StatCard } from "@/components/StatCard";
-import { mockSalesTrend, mockCategoryDistribution, mockStockStatus, mockProducts, mockSales } from "@/lib/mock-data";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, BarChart, Bar, Legend,
 } from "recharts";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
-const topProducts = [
-  { name: "MacBook Pro 16\"", sold: 120, revenue: 2499988.00 },
-  { name: "Wireless Keyboard", sold: 85, revenue: 566591.50 },
-  { name: "USB-C Hub", sold: 64, revenue: 245280.00 },
-  { name: "Webcam HD Pro", sold: 42, revenue: 524964.00 },
-  { name: "Desk Lamp LED", sold: 38, revenue: 189962.00 },
-];
+const COLORS = ["hsl(210 100% 50%)", "hsl(142 71% 45%)", "hsl(38 92% 50%)", "hsl(280 65% 60%)", "hsl(0 72% 51%)"];
 
 const Dashboard = () => {
-  const lowStockCount = mockProducts.filter(p => p.stock <= p.min_stock).length;
-  const totalValue = mockProducts.reduce((s, p) => s + p.stock * p.selling_price, 0);
+  const { user } = useAuth();
+  const [products, setProducts] = useState<any[]>([]);
+  const [sales, setSales] = useState<any[]>([]);
+  const [purchases, setPurchases] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    Promise.all([
+      supabase.from("products").select("*").eq("user_id", user.id),
+      supabase.from("sales").select("*").eq("user_id", user.id).order("date", { ascending: false }),
+      supabase.from("purchases").select("*").eq("user_id", user.id).order("date", { ascending: false }),
+    ]).then(([p, s, pu]) => {
+      if (p.data) setProducts(p.data);
+      if (s.data) setSales(s.data);
+      if (pu.data) setPurchases(pu.data);
+    });
+  }, [user]);
+
+  const lowStockCount = products.filter(p => p.stock <= p.min_stock).length;
+  const totalValue = products.reduce((s, p) => s + p.stock * Number(p.selling_price), 0);
+  const totalSalesAmount = sales.reduce((s, sale) => s + Number(sale.total), 0);
+  const totalPurchasesAmount = purchases.reduce((s, p) => s + Number(p.total), 0);
+  const profitMargin = totalSalesAmount > 0 ? (((totalSalesAmount - totalPurchasesAmount) / totalSalesAmount) * 100).toFixed(1) : "0";
+
+  // Category distribution from products
+  const catMap: Record<string, number> = {};
+  products.forEach(p => { catMap[p.category] = (catMap[p.category] || 0) + 1; });
+  const categoryDistribution = Object.entries(catMap).map(([name, value], i) => ({ name, value, fill: COLORS[i % COLORS.length] }));
+
+  // Stock status
+  const inStock = products.filter(p => p.stock > p.min_stock).length;
+  const lowStock = products.filter(p => p.stock > 0 && p.stock <= p.min_stock).length;
+  const outOfStock = products.filter(p => p.stock === 0).length;
+  const stockStatus = [
+    { name: "In Stock", value: inStock, fill: "hsl(142 71% 45%)" },
+    { name: "Low Stock", value: lowStock, fill: "hsl(38 92% 50%)" },
+    { name: "Out of Stock", value: outOfStock, fill: "hsl(0 72% 51%)" },
+  ].filter(s => s.value > 0);
+
+  // Sales trend by month
+  const salesByMonth: Record<string, { sales: number; purchases: number }> = {};
+  sales.forEach(s => {
+    const m = s.date?.slice(0, 7);
+    if (m) { salesByMonth[m] = salesByMonth[m] || { sales: 0, purchases: 0 }; salesByMonth[m].sales += Number(s.total); }
+  });
+  purchases.forEach(p => {
+    const m = p.date?.slice(0, 7);
+    if (m) { salesByMonth[m] = salesByMonth[m] || { sales: 0, purchases: 0 }; salesByMonth[m].purchases += Number(p.total); }
+  });
+  const salesTrend = Object.entries(salesByMonth).sort().slice(-6).map(([month, d]) => ({ month, ...d }));
+
+  // Top products by sales mentions
+  const topProducts = products.slice(0, 5).map(p => ({ name: p.name, stock: p.stock }));
 
   return (
     <div className="p-4 sm:p-6 max-w-[1400px] mx-auto">
-      {/* Stats */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-        <StatCard title="Total Products" value={mockProducts.length} subtitle="In catalog" icon={<Package className="w-5 h-5" />} />
+        <StatCard title="Total Products" value={products.length} subtitle="In catalog" icon={<Package className="w-5 h-5" />} />
         <StatCard title="Low Stock Alerts" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-5 h-5" />} iconColor="text-warning" />
-        <StatCard title="Total Value" value={`₹${totalValue.toLocaleString("en-IN")}`} trend="↑ 8% from last month" icon={<DollarSign className="w-5 h-5" />} />
-        <StatCard title="Total Sales" value={mockSales.length} trend="↑ 12% from last month" icon={<ShoppingCart className="w-5 h-5" />} />
-        <StatCard title="Profit Margin" value="24.5%" subtitle="Avg. across products" icon={<TrendingUp className="w-5 h-5" />} iconColor="text-success" />
+        <StatCard title="Total Value" value={`₹${totalValue.toLocaleString("en-IN")}`} icon={<DollarSign className="w-5 h-5" />} />
+        <StatCard title="Total Sales" value={sales.length} subtitle={`₹${totalSalesAmount.toLocaleString("en-IN")}`} icon={<ShoppingCart className="w-5 h-5" />} />
+        <StatCard title="Profit Margin" value={`${profitMargin}%`} subtitle="Avg. across products" icon={<TrendingUp className="w-5 h-5" />} iconColor="text-success" />
       </div>
 
-      {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-4">Sales & Purchases Trend</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <LineChart data={mockSalesTrend}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 20%)" />
-              <XAxis dataKey="month" stroke="hsl(215 15% 55%)" fontSize={12} />
-              <YAxis stroke="hsl(215 15% 55%)" fontSize={12} tickFormatter={(v) => `₹${v / 1000}k`} />
-              <Tooltip
-                contentStyle={{ background: "hsl(220 18% 15%)", border: "1px solid hsl(220 13% 20%)", borderRadius: "8px", color: "hsl(210 20% 92%)" }}
-                formatter={(value: number) => [`₹${value.toLocaleString("en-IN")}`, undefined]}
-              />
-              <Line type="monotone" dataKey="sales" stroke="hsl(210 100% 50%)" strokeWidth={2} dot={false} />
-              <Line type="monotone" dataKey="purchases" stroke="hsl(142 71% 45%)" strokeWidth={2} dot={false} />
-              <Legend />
-            </LineChart>
-          </ResponsiveContainer>
+          {salesTrend.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <LineChart data={salesTrend}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(v) => `₹${v / 1000}k`} />
+                <Tooltip />
+                <Line type="monotone" dataKey="sales" stroke="hsl(210 100% 50%)" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="purchases" stroke="hsl(142 71% 45%)" strokeWidth={2} dot={false} />
+                <Legend />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[280px] flex items-center justify-center text-muted-foreground">Add sales and purchases to see trends</div>
+          )}
         </div>
 
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-4">Category Distribution</h3>
-          <ResponsiveContainer width="100%" height={280}>
-            <PieChart>
-              <Pie data={mockCategoryDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={4} dataKey="value">
-                {mockCategoryDistribution.map((entry, i) => (
-                  <Cell key={i} fill={entry.fill} />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={{ background: "hsl(220 18% 15%)", border: "1px solid hsl(220 13% 20%)", borderRadius: "8px", color: "hsl(210 20% 92%)" }} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          {categoryDistribution.length > 0 ? (
+            <ResponsiveContainer width="100%" height={280}>
+              <PieChart>
+                <Pie data={categoryDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={4} dataKey="value">
+                  {categoryDistribution.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[280px] flex items-center justify-center text-muted-foreground">Add products to see distribution</div>
+          )}
         </div>
       </div>
 
-      {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
         <div className="bg-card border border-border rounded-xl p-5">
           <h3 className="font-semibold text-foreground mb-4">Stock Status</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie data={mockStockStatus} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
-                {mockStockStatus.map((entry, i) => (
-                  <Cell key={i} fill={entry.fill} />
-                ))}
-              </Pie>
-              <Tooltip contentStyle={{ background: "hsl(220 18% 15%)", border: "1px solid hsl(220 13% 20%)", borderRadius: "8px", color: "hsl(210 20% 92%)" }} />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
+          {stockStatus.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <PieChart>
+                <Pie data={stockStatus} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
+                  {stockStatus.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[250px] flex items-center justify-center text-muted-foreground">Add products to see stock status</div>
+          )}
         </div>
 
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
-          <h3 className="font-semibold text-foreground mb-4">Top Selling Products</h3>
-          <ResponsiveContainer width="100%" height={250}>
-            <BarChart data={topProducts} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 20%)" />
-              <XAxis type="number" stroke="hsl(215 15% 55%)" fontSize={12} />
-              <YAxis type="category" dataKey="name" stroke="hsl(215 15% 55%)" fontSize={11} width={120} />
-              <Tooltip contentStyle={{ background: "hsl(220 18% 15%)", border: "1px solid hsl(220 13% 20%)", borderRadius: "8px", color: "hsl(210 20% 92%)" }} />
-              <Bar dataKey="sold" fill="hsl(210 100% 50%)" radius={[0, 4, 4, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
+          <h3 className="font-semibold text-foreground mb-4">Product Stock Levels</h3>
+          {topProducts.length > 0 ? (
+            <ResponsiveContainer width="100%" height={250}>
+              <BarChart data={topProducts} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                <Tooltip />
+                <Bar dataKey="stock" fill="hsl(210 100% 50%)" radius={[0, 4, 4, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="h-[250px] flex items-center justify-center text-muted-foreground">Add products to see stock levels</div>
+          )}
         </div>
       </div>
 
-      {/* Recent Sales Table */}
       <div className="bg-card border border-border rounded-xl p-5">
         <h3 className="font-semibold text-foreground mb-4">Recent Sales</h3>
         <div className="overflow-x-auto">
@@ -112,12 +164,15 @@ const Dashboard = () => {
               </tr>
             </thead>
             <tbody>
-              {mockSales.map((sale) => (
+              {sales.length === 0 && (
+                <tr><td colSpan={6} className="py-8 text-center text-muted-foreground">No sales yet. Create your first sale!</td></tr>
+              )}
+              {sales.slice(0, 5).map((sale) => (
                 <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                   <td className="py-3 px-4">{sale.date}</td>
                   <td className="py-3 px-4 font-medium text-foreground">{sale.customer}</td>
                   <td className="py-3 px-4 text-center">{sale.items}</td>
-                  <td className="py-3 px-4 text-right font-mono">₹{sale.total.toLocaleString("en-IN")}</td>
+                  <td className="py-3 px-4 text-right font-mono">₹{Number(sale.total).toLocaleString("en-IN")}</td>
                   <td className="py-3 px-4 text-center">{sale.payment}</td>
                   <td className="py-3 px-4 text-center">
                     <span className={sale.status === "Completed" ? "status-in-stock" : "status-low-stock"}>

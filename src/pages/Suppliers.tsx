@@ -1,28 +1,58 @@
-import { useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
-import { mockSuppliers } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Plus, Search, Trash2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const emptySupplier = { name: "", contact: "", email: "", phone: "", address: "" };
 
 const Suppliers = () => {
-  const [suppliers, setSuppliers] = useState(mockSuppliers);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [suppliers, setSuppliers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState(emptySupplier);
+  const [saving, setSaving] = useState(false);
 
-  const filtered = suppliers.filter(s => s.name.toLowerCase().includes(search.toLowerCase()) || s.contact.toLowerCase().includes(search.toLowerCase()));
+  const fetchSuppliers = async () => {
+    if (!user) return;
+    const { data } = await supabase.from("suppliers").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    if (data) setSuppliers(data);
+  };
 
-  const handleSave = () => {
-    setSuppliers([...suppliers, { ...form, id: Date.now() }]);
-    setShowAdd(false);
-    setForm(emptySupplier);
+  useEffect(() => { fetchSuppliers(); }, [user]);
+
+  const filtered = suppliers.filter(s =>
+    s.name.toLowerCase().includes(search.toLowerCase()) ||
+    (s.contact || "").toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    const { error } = await supabase.from("suppliers").insert({ ...form, user_id: user.id });
+    setSaving(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setShowAdd(false);
+      setForm(emptySupplier);
+      fetchSuppliers();
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    await supabase.from("suppliers").delete().eq("id", deleteId);
+    setDeleteId(null);
+    fetchSuppliers();
   };
 
   return (
@@ -35,6 +65,10 @@ const Suppliers = () => {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input placeholder="Search suppliers..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
       </div>
+
+      {suppliers.length === 0 && (
+        <div className="text-center py-12 text-muted-foreground">No suppliers yet. Add your first supplier!</div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {filtered.map(s => (
@@ -63,7 +97,7 @@ const Suppliers = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Add Supplier</Button>
+            <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Add Supplier"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -76,7 +110,7 @@ const Suppliers = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={() => { setSuppliers(suppliers.filter(s => s.id !== deleteId)); setDeleteId(null); }} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">Delete</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

@@ -1,6 +1,4 @@
-import { useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
-import { mockProducts } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
@@ -8,28 +6,41 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "" };
 
 const Products = () => {
-  const [products, setProducts] = useState(mockProducts);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [catFilter, setCatFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showAdd, setShowAdd] = useState(false);
   const [editProduct, setEditProduct] = useState<any>(null);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyProduct);
   const [page, setPage] = useState(1);
+  const [saving, setSaving] = useState(false);
   const perPage = 5;
+
+  const fetchProducts = async () => {
+    if (!user) return;
+    const { data } = await supabase.from("products").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    if (data) setProducts(data);
+  };
+
+  useEffect(() => { fetchProducts(); }, [user]);
 
   const getStatus = (p: any) => p.stock === 0 ? "Out of Stock" : p.stock <= p.min_stock ? "Low Stock" : "In Stock";
 
   const filtered = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(search.toLowerCase()) || p.sku.toLowerCase().includes(search.toLowerCase());
     const matchCat = catFilter === "all" || p.category === catFilter;
-    const status = getStatus(p);
-    const matchStatus = statusFilter === "all" || status === statusFilter;
+    const matchStatus = statusFilter === "all" || getStatus(p) === statusFilter;
     return matchSearch && matchCat && matchStatus;
   });
 
@@ -37,24 +48,32 @@ const Products = () => {
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
   const categories = [...new Set(products.map(p => p.category))];
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
     if (editProduct) {
-      setProducts(products.map(p => p.id === editProduct.id ? { ...editProduct, ...form } : p));
+      const { error } = await supabase.from("products").update({ ...form, updated_at: new Date().toISOString() }).eq("id", editProduct.id);
+      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      setProducts([...products, { ...form, id: Date.now() }]);
+      const { error } = await supabase.from("products").insert({ ...form, user_id: user.id });
+      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     }
+    setSaving(false);
     setShowAdd(false);
     setEditProduct(null);
     setForm(emptyProduct);
+    fetchProducts();
   };
 
-  const handleDelete = () => {
-    setProducts(products.filter(p => p.id !== deleteId));
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    await supabase.from("products").delete().eq("id", deleteId);
     setDeleteId(null);
+    fetchProducts();
   };
 
   const openEdit = (p: any) => {
-    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: p.cost_price, selling_price: p.selling_price, min_stock: p.min_stock, location: p.location });
+    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "" });
     setEditProduct(p);
     setShowAdd(true);
   };
@@ -65,7 +84,6 @@ const Products = () => {
         <Button onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Product</Button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -89,7 +107,6 @@ const Products = () => {
         </Select>
       </div>
 
-      {/* Table */}
       <div className="bg-card border border-border rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -101,6 +118,9 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
+              {paginated.length === 0 && (
+                <tr><td colSpan={10} className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</td></tr>
+              )}
               {paginated.map(p => {
                 const status = getStatus(p);
                 return (
@@ -109,8 +129,8 @@ const Products = () => {
                     <td className="py-3 px-4 font-mono text-muted-foreground">{p.sku}</td>
                     <td className="py-3 px-4">{p.category}</td>
                     <td className="py-3 px-4 text-center">{p.stock}</td>
-                    <td className="py-3 px-4 font-mono">₹{p.cost_price.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
-                    <td className="py-3 px-4 font-mono">₹{p.selling_price.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                    <td className="py-3 px-4 font-mono">₹{Number(p.cost_price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                    <td className="py-3 px-4 font-mono">₹{Number(p.selling_price).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                     <td className="py-3 px-4 text-center">{p.min_stock}</td>
                     <td className="py-3 px-4">
                       <span className={status === "In Stock" ? "status-in-stock" : status === "Low Stock" ? "status-low-stock" : "status-out-of-stock"}>
@@ -130,7 +150,6 @@ const Products = () => {
             </tbody>
           </table>
         </div>
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-border">
             <p className="text-sm text-muted-foreground">Showing {(page-1)*perPage+1}-{Math.min(page*perPage, filtered.length)} of {filtered.length}</p>
@@ -143,7 +162,6 @@ const Products = () => {
         )}
       </div>
 
-      {/* Add/Edit Modal */}
       <Dialog open={showAdd} onOpenChange={v => { if (!v) { setShowAdd(false); setEditProduct(null); } }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
@@ -161,12 +179,11 @@ const Products = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => { setShowAdd(false); setEditProduct(null); }}>Cancel</Button>
-            <Button onClick={handleSave}>{editProduct ? "Update" : "Add"} Product</Button>
+            <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : editProduct ? "Update" : "Add"} Product</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation */}
       <AlertDialog open={deleteId !== null} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
