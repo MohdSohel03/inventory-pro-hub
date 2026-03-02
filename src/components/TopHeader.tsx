@@ -1,4 +1,4 @@
-import { Bell, Menu, User, LogOut, Settings, Sun, Moon } from "lucide-react";
+import { Bell, Menu, User, LogOut, Settings } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -6,12 +6,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const notifications = [
-  { id: 1, text: "Ergonomic Office Chair is low on stock", time: "2 min ago" },
-  { id: 2, text: "New purchase order received", time: "1 hour ago" },
-  { id: 3, text: "Standing Desk is out of stock", time: "3 hours ago" },
-  { id: 4, text: "Monthly report is ready", time: "1 day ago" },
+  { id: 1, text: "Check Stock Alerts for low inventory items", time: "Just now" },
 ];
 
 const pageTitles: Record<string, { title: string; subtitle?: string }> = {
@@ -33,7 +33,27 @@ interface TopHeaderProps {
 export function TopHeader({ onMenuClick }: TopHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, signOut } = useAuth();
   const pageInfo = pageTitles[location.pathname] || { title: "StockPilot" };
+
+  const { data: profile } = useQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: async () => {
+      if (!user) return null;
+      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      return data;
+    },
+    enabled: !!user,
+  });
+
+  const initials = profile?.full_name
+    ? profile.full_name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
+    : user?.email?.slice(0, 2).toUpperCase() || "SP";
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/login");
+  };
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center justify-between px-4 shrink-0">
@@ -48,7 +68,6 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Notifications */}
         <Popover>
           <PopoverTrigger asChild>
             <button className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
@@ -71,19 +90,18 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
           </PopoverContent>
         </Popover>
 
-        {/* Profile */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 p-1.5 rounded-lg hover:bg-muted transition-colors">
               <Avatar className="w-8 h-8">
-                <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">SP</AvatarFallback>
+                <AvatarFallback className="bg-primary/15 text-primary text-sm font-semibold">{initials}</AvatarFallback>
               </Avatar>
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
             <div className="px-2 py-1.5">
-              <p className="text-sm font-medium text-foreground">Admin User</p>
-              <p className="text-xs text-muted-foreground">admin@stockpilot.com</p>
+              <p className="text-sm font-medium text-foreground">{profile?.full_name || "User"}</p>
+              <p className="text-xs text-muted-foreground">{user?.email}</p>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate("/profile")}>
@@ -93,7 +111,7 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
               <Settings className="w-4 h-4 mr-2" /> Settings
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate("/login")} className="text-destructive focus:text-destructive">
+            <DropdownMenuItem onClick={handleSignOut} className="text-destructive focus:text-destructive">
               <LogOut className="w-4 h-4 mr-2" /> Sign Out
             </DropdownMenuItem>
           </DropdownMenuContent>

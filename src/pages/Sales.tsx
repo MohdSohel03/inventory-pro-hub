@@ -1,21 +1,38 @@
-import { useState } from "react";
-import { PageHeader } from "@/components/PageHeader";
-import { mockSales, mockProducts } from "@/lib/mock-data";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Plus, Search, Trash2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Sales = () => {
-  const [sales, setSales] = useState(mockSales);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [sales, setSales] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [customer, setCustomer] = useState("");
   const [payment, setPayment] = useState("Credit Card");
   const [discount, setDiscount] = useState(0);
   const [items, setItems] = useState([{ product: "", quantity: 1, price: 0 }]);
+  const [saving, setSaving] = useState(false);
+
+  const fetchData = async () => {
+    if (!user) return;
+    const [salesRes, prodsRes] = await Promise.all([
+      supabase.from("sales").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
+      supabase.from("products").select("*").eq("user_id", user.id),
+    ]);
+    if (salesRes.data) setSales(salesRes.data);
+    if (prodsRes.data) setProducts(prodsRes.data);
+  };
+
+  useEffect(() => { fetchData(); }, [user]);
 
   const filtered = sales.filter(s => s.customer.toLowerCase().includes(search.toLowerCase()));
   const subtotal = items.reduce((s, i) => s + i.quantity * i.price, 0);
@@ -25,12 +42,29 @@ const Sales = () => {
   const removeItem = (idx: number) => setItems(items.filter((_, i) => i !== idx));
   const updateItem = (idx: number, field: string, value: any) => setItems(items.map((item, i) => i === idx ? { ...item, [field]: value } : item));
 
-  const handleSave = () => {
-    setSales([{ id: Date.now(), date: new Date().toISOString().split("T")[0], customer, items: items.length, total: +total.toFixed(2), discount, payment, status: "Completed" }, ...sales]);
-    setShowAdd(false);
-    setCustomer("");
-    setDiscount(0);
-    setItems([{ product: "", quantity: 1, price: 0 }]);
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+    const { error } = await supabase.from("sales").insert({
+      user_id: user.id,
+      date: new Date().toISOString().split("T")[0],
+      customer,
+      items: items.length,
+      total: +total.toFixed(2),
+      discount,
+      payment,
+      status: "Completed",
+    });
+    setSaving(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setShowAdd(false);
+      setCustomer("");
+      setDiscount(0);
+      setItems([{ product: "", quantity: 1, price: 0 }]);
+      fetchData();
+    }
   };
 
   return (
@@ -54,13 +88,16 @@ const Sales = () => {
             </tr>
           </thead>
           <tbody>
+            {filtered.length === 0 && (
+              <tr><td colSpan={7} className="py-8 text-center text-muted-foreground">No sales yet.</td></tr>
+            )}
             {filtered.map(s => (
               <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                 <td className="py-3 px-4">{s.date}</td>
                 <td className="py-3 px-4 font-medium text-foreground">{s.customer}</td>
                 <td className="py-3 px-4 text-center">{s.items}</td>
-                <td className="py-3 px-4">{s.discount}%</td>
-                <td className="py-3 px-4 font-mono">₹{s.total.toLocaleString("en-IN")}</td>
+                <td className="py-3 px-4">{Number(s.discount)}%</td>
+                <td className="py-3 px-4 font-mono">₹{Number(s.total).toLocaleString("en-IN")}</td>
                 <td className="py-3 px-4">{s.payment}</td>
                 <td className="py-3 px-4"><span className={s.status === "Completed" ? "status-in-stock" : "status-low-stock"}>{s.status}</span></td>
               </tr>
@@ -93,9 +130,9 @@ const Sales = () => {
                 {items.map((item, i) => (
                   <div key={i} className="flex gap-2 items-end">
                     <div className="flex-1">
-                      <Select value={item.product} onValueChange={v => { const p = mockProducts.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "price", p.selling_price); }}>
+                      <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "price", Number(p.selling_price)); }}>
                         <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
-                        <SelectContent>{mockProducts.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
+                        <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
                     <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
@@ -113,7 +150,7 @@ const Sales = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleSave}>Create Sale</Button>
+            <Button onClick={handleSave} disabled={saving}>{saving ? "Creating..." : "Create Sale"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

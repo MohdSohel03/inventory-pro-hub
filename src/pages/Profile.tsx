@@ -1,47 +1,87 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
-    name: "Admin User",
-    email: "admin@stockpilot.com",
-    phone: "+91 98765 43210",
-    company: "StockPilot Inc.",
-    role: "Administrator",
+    full_name: "",
+    email: "",
+    phone: "",
+    company: "",
+    role: "user",
   });
+
+  useEffect(() => {
+    if (!user) return;
+    supabase.from("profiles").select("*").eq("id", user.id).single().then(({ data }) => {
+      if (data) {
+        setForm({
+          full_name: data.full_name || "",
+          email: data.email || "",
+          phone: data.phone || "",
+          company: data.company || "",
+          role: data.role || "user",
+        });
+      }
+    });
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user) return;
+    setLoading(true);
+    const { error } = await supabase.from("profiles").update({
+      full_name: form.full_name,
+      phone: form.phone,
+      company: form.company,
+      updated_at: new Date().toISOString(),
+    }).eq("id", user.id);
+    setLoading(false);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Profile updated!" });
+    }
+  };
+
+  const initials = form.full_name
+    ? form.full_name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
+    : "U";
 
   return (
     <div className="p-6 max-w-[800px] mx-auto">
       <div className="bg-card border border-border rounded-xl p-6 space-y-6">
-        {/* Avatar */}
         <div className="flex items-center gap-4">
           <div className="relative">
             <Avatar className="w-20 h-20">
-              <AvatarFallback className="bg-primary/15 text-primary text-2xl font-bold">SP</AvatarFallback>
+              <AvatarFallback className="bg-primary/15 text-primary text-2xl font-bold">{initials}</AvatarFallback>
             </Avatar>
             <button className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center">
               <Camera className="w-3.5 h-3.5" />
             </button>
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-foreground">{form.name}</h2>
-            <p className="text-sm text-muted-foreground">{form.role}</p>
+            <h2 className="text-lg font-semibold text-foreground">{form.full_name || "User"}</h2>
+            <p className="text-sm text-muted-foreground capitalize">{form.role}</p>
           </div>
         </div>
 
-        {/* Form */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <Label>Full Name</Label>
-            <Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} />
+            <Input value={form.full_name} onChange={e => setForm({ ...form, full_name: e.target.value })} />
           </div>
           <div>
             <Label>Email</Label>
-            <Input value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
+            <Input value={form.email} disabled className="opacity-60" />
           </div>
           <div>
             <Label>Phone</Label>
@@ -58,7 +98,9 @@ const Profile = () => {
         </div>
 
         <div className="flex justify-end">
-          <Button>Save Changes</Button>
+          <Button onClick={handleSave} disabled={loading}>
+            {loading ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
       </div>
     </div>
