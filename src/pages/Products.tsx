@@ -111,8 +111,8 @@ const Products = () => {
                     <td className="py-3 px-4 font-mono text-muted-foreground">{p.sku}</td>
                     <td className="py-3 px-4">{p.category}</td>
                     <td className="py-3 px-4 text-center">{p.stock}</td>
-                    <td className="py-3 px-4 font-mono">${p.cost_price.toFixed(2)}</td>
-                    <td className="py-3 px-4 font-mono">${p.selling_price.toFixed(2)}</td>
+                    <td className="py-3 px-4 font-mono">₹{p.cost_price.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
+                    <td className="py-3 px-4 font-mono">₹{p.selling_price.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</td>
                     <td className="py-3 px-4 text-center">{p.min_stock}</td>
                     <td className="py-3 px-4">
                       <span className={status === "In Stock" ? "status-in-stock" : status === "Low Stock" ? "status-low-stock" : "status-out-of-stock"}>

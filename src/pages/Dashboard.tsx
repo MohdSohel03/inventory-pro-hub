@@ -8,11 +8,11 @@ import {
 } from "recharts";
 
 const topProducts = [
-  { name: "MacBook Pro 16\"", sold: 120, revenue: 299998.80 },
-  { name: "Wireless Keyboard", sold: 85, revenue: 6799.15 },
-  { name: "USB-C Hub", sold: 64, revenue: 2943.36 },
-  { name: "Webcam HD Pro", sold: 42, revenue: 6299.58 },
-  { name: "Desk Lamp LED", sold: 38, revenue: 2279.62 },
+  { name: "MacBook Pro 16\"", sold: 120, revenue: 2499988.00 },
+  { name: "Wireless Keyboard", sold: 85, revenue: 566591.50 },
+  { name: "USB-C Hub", sold: 64, revenue: 245280.00 },
+  { name: "Webcam HD Pro", sold: 42, revenue: 524964.00 },
+  { name: "Desk Lamp LED", sold: 38, revenue: 189962.00 },
 ];
 
 const Dashboard = () => {
@@ -27,7 +27,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <StatCard title="Total Products" value={mockProducts.length} subtitle="In catalog" icon={<Package className="w-5 h-5" />} />
         <StatCard title="Low Stock Alerts" value={lowStockCount} subtitle="Items need restocking" icon={<AlertTriangle className="w-5 h-5" />} iconColor="text-warning" />
-        <StatCard title="Total Value" value={`$${totalValue.toLocaleString()}`} trend="↑ 8% from last month" icon={<DollarSign className="w-5 h-5" />} />
+        <StatCard title="Total Value" value={`₹${totalValue.toLocaleString("en-IN")}`} trend="↑ 8% from last month" icon={<DollarSign className="w-5 h-5" />} />
         <StatCard title="Total Sales" value={mockSales.length} trend="↑ 12% from last month" icon={<ShoppingCart className="w-5 h-5" />} />
         <StatCard title="Profit Margin" value="24.5%" subtitle="Avg. across products" icon={<TrendingUp className="w-5 h-5" />} iconColor="text-success" />
       </div>
@@ -41,10 +41,10 @@ const Dashboard = () => {
             <LineChart data={mockSalesTrend}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 20%)" />
               <XAxis dataKey="month" stroke="hsl(215 15% 55%)" fontSize={12} />
-              <YAxis stroke="hsl(215 15% 55%)" fontSize={12} tickFormatter={(v) => `$${v / 1000}k`} />
+              <YAxis stroke="hsl(215 15% 55%)" fontSize={12} tickFormatter={(v) => `₹${v / 1000}k`} />
               <Tooltip
                 contentStyle={{ background: "hsl(220 18% 15%)", border: "1px solid hsl(220 13% 20%)", borderRadius: "8px", color: "hsl(210 20% 92%)" }}
-                formatter={(value: number) => [`$${value.toLocaleString()}`, undefined]}
+                formatter={(value: number) => [`₹${value.toLocaleString("en-IN")}`, undefined]}
               />
               <Line type="monotone" dataKey="sales" stroke="hsl(210 100% 50%)" strokeWidth={2} dot={false} />
               <Line type="monotone" dataKey="purchases" stroke="hsl(142 71% 45%)" strokeWidth={2} dot={false} />
@@ -124,7 +124,7 @@ const Dashboard = () => {
                   <td className="py-3 px-4">{sale.date}</td>
                   <td className="py-3 px-4 font-medium text-foreground">{sale.customer}</td>
                   <td className="py-3 px-4 text-center">{sale.items}</td>
-                  <td className="py-3 px-4 text-right font-mono">${sale.total.toLocaleString()}</td>
+                  <td className="py-3 px-4 text-right font-mono">₹{sale.total.toLocaleString("en-IN")}</td>
                   <td className="py-3 px-4 text-center">{sale.payment}</td>
                   <td className="py-3 px-4 text-center">
                     <span className={sale.status === "Completed" ? "status-in-stock" : "status-low-stock"}>

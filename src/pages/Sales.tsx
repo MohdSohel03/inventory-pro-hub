@@ -58,7 +58,7 @@ const Sales = () => {
                 <td className="py-3 px-4 font-medium text-foreground">{s.customer}</td>
                 <td className="py-3 px-4 text-center">{s.items}</td>
                 <td className="py-3 px-4">{s.discount}%</td>
-                <td className="py-3 px-4 font-mono">${s.total.toLocaleString()}</td>
+                <td className="py-3 px-4 font-mono">₹{s.total.toLocaleString("en-IN")}</td>
                 <td className="py-3 px-4">{s.payment}</td>
                 <td className="py-3 px-4"><span className={s.status === "Completed" ? "status-in-stock" : "status-low-stock"}>{s.status}</span></td>
               </tr>
@@ -105,8 +105,8 @@ const Sales = () => {
             </div>
             <div><Label>Discount (%)</Label><Input type="number" value={discount} onChange={e => setDiscount(+e.target.value)} className="w-28" /></div>
             <div className="flex justify-between text-foreground">
-              <span>Subtotal: ${subtotal.toFixed(2)}</span>
-              <span className="text-lg font-bold">Total: ${total.toFixed(2)}</span>
+              <span>Subtotal: ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+              <span className="text-lg font-bold">Total: ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
           <DialogFooter>

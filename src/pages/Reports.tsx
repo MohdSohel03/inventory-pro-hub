@@ -45,15 +45,15 @@ const Reports = () => {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
         <div className="bg-card border border-border rounded-xl p-5">
           <p className="text-sm text-muted-foreground">Total Sales</p>
-          <p className="text-2xl font-bold text-foreground">${totalSales.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-foreground">₹{totalSales.toLocaleString("en-IN")}</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-5">
           <p className="text-sm text-muted-foreground">Total Purchases</p>
-          <p className="text-2xl font-bold text-foreground">${totalPurchases.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-foreground">₹{totalPurchases.toLocaleString("en-IN")}</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-5">
           <p className="text-sm text-muted-foreground">Profit</p>
-          <p className="text-2xl font-bold text-success">${profit.toLocaleString()}</p>
+          <p className="text-2xl font-bold text-success">₹{profit.toLocaleString("en-IN")}</p>
         </div>
       </div>
 
@@ -65,7 +65,7 @@ const Reports = () => {
             <LineChart data={mockSalesTrend}>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(220 13% 20%)" />
               <XAxis dataKey="month" stroke="hsl(215 15% 55%)" fontSize={12} />
-              <YAxis stroke="hsl(215 15% 55%)" fontSize={12} tickFormatter={v => `$${v/1000}k`} />
+              <YAxis stroke="hsl(215 15% 55%)" fontSize={12} tickFormatter={v => `₹${v/1000}k`} />
               <Tooltip contentStyle={{ background: "hsl(220 18% 15%)", border: "1px solid hsl(220 13% 20%)", borderRadius: "8px", color: "hsl(210 20% 92%)" }} />
               <Line type="monotone" dataKey="sales" stroke="hsl(210 100% 50%)" strokeWidth={2} dot={false} />
             </LineChart>

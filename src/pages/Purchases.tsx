@@ -53,7 +53,7 @@ const Purchases = () => {
                 <td className="py-3 px-4 font-medium text-foreground">{p.supplier}</td>
                 <td className="py-3 px-4">{p.date}</td>
                 <td className="py-3 px-4 text-center">{p.items}</td>
-                <td className="py-3 px-4 font-mono">${p.total.toLocaleString()}</td>
+                <td className="py-3 px-4 font-mono">₹{p.total.toLocaleString("en-IN")}</td>
                 <td className="py-3 px-4"><span className={p.status === "Received" ? "status-in-stock" : "status-low-stock"}>{p.status}</span></td>
               </tr>
             ))}
@@ -92,7 +92,7 @@ const Purchases = () => {
                 ))}
               </div>
             </div>
-            <div className="text-right text-lg font-bold text-foreground">Total: ${total.toFixed(2)}</div>
+            <div className="text-right text-lg font-bold text-foreground">Total: ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
