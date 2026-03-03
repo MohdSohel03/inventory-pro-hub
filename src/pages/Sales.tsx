@@ -25,8 +25,8 @@ const Sales = () => {
   const fetchData = async () => {
     if (!user) return;
     const [salesRes, prodsRes] = await Promise.all([
-      supabase.from("sales").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("products").select("*").eq("user_id", user.id),
+      supabase.from("sales").select("*").order("created_at", { ascending: false }),
+      supabase.from("products").select("*"),
     ]);
     if (salesRes.data) setSales(salesRes.data);
     if (prodsRes.data) setProducts(prodsRes.data);

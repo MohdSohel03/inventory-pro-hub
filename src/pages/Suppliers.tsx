@@ -23,7 +23,7 @@ const Suppliers = () => {
 
   const fetchSuppliers = async () => {
     if (!user) return;
-    const { data } = await supabase.from("suppliers").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    const { data } = await supabase.from("suppliers").select("*").order("created_at", { ascending: false });
     if (data) setSuppliers(data);
   };
 

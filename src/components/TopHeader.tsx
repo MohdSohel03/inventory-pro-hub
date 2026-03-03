@@ -7,6 +7,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,6 +25,7 @@ const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   "/stock-alerts": { title: "Stock Alerts" },
   "/settings": { title: "Settings", subtitle: "Manage your preferences" },
   "/profile": { title: "Profile", subtitle: "Your account details" },
+  "/staff": { title: "Staff Management", subtitle: "Manage your team" },
 };
 
 interface TopHeaderProps {
@@ -34,6 +36,7 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, signOut } = useAuth();
+  const { role } = useRole();
   const pageInfo = pageTitles[location.pathname] || { title: "StockPilot" };
 
   const { data: profile } = useQuery({
@@ -102,6 +105,9 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
             <div className="px-2 py-1.5">
               <p className="text-sm font-medium text-foreground">{profile?.full_name || "User"}</p>
               <p className="text-xs text-muted-foreground">{user?.email}</p>
+              <span className={`inline-block mt-1 text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded ${role === "admin" ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"}`}>
+                {role || "user"}
+              </span>
             </div>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => navigate("/profile")}>

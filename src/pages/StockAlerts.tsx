@@ -9,7 +9,7 @@ const StockAlerts = () => {
 
   useEffect(() => {
     if (!user) return;
-    supabase.from("products").select("*").eq("user_id", user.id).then(({ data }) => {
+    supabase.from("products").select("*").then(({ data }) => {
       if (data) setLowStock(data.filter(p => p.stock <= p.min_stock));
     });
   }, [user]);

@@ -8,12 +8,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 
 const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "" };
 
 const Products = () => {
   const { user } = useAuth();
+  const { isAdmin } = useRole();
   const { toast } = useToast();
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -29,7 +31,7 @@ const Products = () => {
 
   const fetchProducts = async () => {
     if (!user) return;
-    const { data } = await supabase.from("products").select("*").eq("user_id", user.id).order("created_at", { ascending: false });
+    const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
     if (data) setProducts(data);
   };
 
@@ -81,7 +83,9 @@ const Products = () => {
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4">
-        <Button onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Product</Button>
+        {isAdmin && (
+          <Button onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Product</Button>
+        )}
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3 mb-4">
@@ -112,7 +116,7 @@ const Products = () => {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                {["Product", "SKU", "Category", "Qty", "Cost", "Price", "Min Stock", "Status", "Location", "Actions"].map(h => (
+                {["Product", "SKU", "Category", "Qty", "Cost", "Price", "Min Stock", "Status", "Location", ...(isAdmin ? ["Actions"] : [])].map(h => (
                   <th key={h} className="text-left py-3 px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
@@ -138,12 +142,14 @@ const Products = () => {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-muted-foreground">{p.location}</td>
-                    <td className="py-3 px-4">
-                      <div className="flex gap-1">
-                        <button onClick={() => openEdit(p)} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                        <button onClick={() => setDeleteId(p.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
-                      </div>
-                    </td>
+                    {isAdmin && (
+                      <td className="py-3 px-4">
+                        <div className="flex gap-1">
+                          <button onClick={() => openEdit(p)} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                          <button onClick={() => setDeleteId(p.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 );
               })}
