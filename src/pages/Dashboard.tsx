@@ -19,9 +19,9 @@ const Dashboard = () => {
   useEffect(() => {
     if (!user) return;
     Promise.all([
-      supabase.from("products").select("*").eq("user_id", user.id),
-      supabase.from("sales").select("*").eq("user_id", user.id).order("date", { ascending: false }),
-      supabase.from("purchases").select("*").eq("user_id", user.id).order("date", { ascending: false }),
+      supabase.from("products").select("*"),
+      supabase.from("sales").select("*").order("date", { ascending: false }),
+      supabase.from("purchases").select("*").order("date", { ascending: false }),
     ]).then(([p, s, pu]) => {
       if (p.data) setProducts(p.data);
       if (s.data) setSales(s.data);

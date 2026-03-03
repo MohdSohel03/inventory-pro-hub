@@ -24,9 +24,9 @@ const Purchases = () => {
   const fetchData = async () => {
     if (!user) return;
     const [purch, suppl, prods] = await Promise.all([
-      supabase.from("purchases").select("*").eq("user_id", user.id).order("created_at", { ascending: false }),
-      supabase.from("suppliers").select("*").eq("user_id", user.id),
-      supabase.from("products").select("*").eq("user_id", user.id),
+      supabase.from("purchases").select("*").order("created_at", { ascending: false }),
+      supabase.from("suppliers").select("*"),
+      supabase.from("products").select("*"),
     ]);
     if (purch.data) setPurchases(purch.data);
     if (suppl.data) setSuppliers(suppl.data);

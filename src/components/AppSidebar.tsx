@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom";
 import { 
   LayoutDashboard, Package, Users, ShoppingCart, DollarSign, 
-  BarChart3, AlertTriangle, Settings, ChevronLeft, ChevronRight, X
+  BarChart3, AlertTriangle, Settings, ChevronLeft, ChevronRight, X, UserPlus
 } from "lucide-react";
+import { useRole } from "@/contexts/RoleContext";
 
 const navItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
@@ -26,25 +27,28 @@ interface AppSidebarProps {
 }
 
 export function AppSidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen }: AppSidebarProps) {
+  const { isAdmin } = useRole();
+
+  const allNavItems = isAdmin
+    ? [...navItems, { label: "Staff", icon: UserPlus, path: "/staff" }]
+    : navItems;
+
   const sidebarContent = (
     <>
-      {/* Logo */}
       <div className="h-14 flex items-center gap-2 px-4 border-b border-sidebar-border">
         <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
           <Package className="w-4 h-4 text-primary-foreground" />
         </div>
         {!collapsed && <span className="font-bold text-foreground text-lg tracking-tight">StockPilot</span>}
-        {/* Mobile close */}
         <button onClick={() => setMobileOpen(false)} className="lg:hidden ml-auto p-1 text-muted-foreground hover:text-foreground">
           <X className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Main Nav */}
       <nav className="flex-1 py-4 px-2 overflow-y-auto">
         {!collapsed && <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground px-3 mb-2">Main</p>}
         <ul className="space-y-0.5">
-          {navItems.map((item) => (
+          {allNavItems.map((item) => (
             <li key={item.path}>
               <NavLink
                 to={item.path}
@@ -66,7 +70,6 @@ export function AppSidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen 
         </ul>
       </nav>
 
-      {/* Bottom */}
       <div className="py-4 px-2 border-t border-sidebar-border">
         <ul className="space-y-0.5">
           {bottomItems.map((item) => (
@@ -100,17 +103,12 @@ export function AppSidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen 
 
   return (
     <>
-      {/* Mobile overlay */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 bg-black/60 lg:hidden" onClick={() => setMobileOpen(false)} />
       )}
-
-      {/* Mobile sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-60 bg-sidebar border-r border-sidebar-border flex flex-col lg:hidden transform transition-transform duration-300 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
         {sidebarContent}
       </aside>
-
-      {/* Desktop sidebar */}
       <aside className={`${collapsed ? "w-16" : "w-60"} transition-all duration-300 bg-sidebar border-r border-sidebar-border hidden lg:flex flex-col sticky top-0 h-screen`}>
         {sidebarContent}
       </aside>
