@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 
 const Purchases = () => {
   const { user } = useAuth();
+  const { isAdmin } = useRole();
   const { toast } = useToast();
   const [purchases, setPurchases] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -67,7 +69,7 @@ const Purchases = () => {
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4">
-        <Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-2" />Create Purchase</Button>
+        {isAdmin && <Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-2" />Create Purchase</Button>}
       </div>
 
       <div className="relative max-w-md mb-4">

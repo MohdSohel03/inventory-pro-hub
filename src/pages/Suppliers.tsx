@@ -7,12 +7,14 @@ import { Plus, Search, Trash2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 
 const emptySupplier = { name: "", contact: "", email: "", phone: "", address: "" };
 
 const Suppliers = () => {
   const { user } = useAuth();
+  const { isAdmin } = useRole();
   const { toast } = useToast();
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -58,7 +60,7 @@ const Suppliers = () => {
   return (
     <div className="p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4">
-        <Button onClick={() => { setForm(emptySupplier); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Supplier</Button>
+        {isAdmin && <Button onClick={() => { setForm(emptySupplier); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Supplier</Button>}
       </div>
 
       <div className="relative max-w-md mb-4">
@@ -75,7 +77,7 @@ const Suppliers = () => {
           <div key={s.id} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
             <div className="flex justify-between items-start">
               <h3 className="font-semibold text-foreground">{s.name}</h3>
-              <button onClick={() => setDeleteId(s.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+              {isAdmin && <button onClick={() => setDeleteId(s.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>}
             </div>
             <p className="text-sm text-muted-foreground mt-2">{s.contact}</p>
             <p className="text-sm text-primary mt-1">{s.email}</p>
