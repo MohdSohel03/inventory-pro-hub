@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Navigate } from "react-router-dom";
 import { Plus, Search, Trash2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,7 +15,7 @@ const emptySupplier = { name: "", contact: "", email: "", phone: "", address: ""
 
 const Suppliers = () => {
   const { user } = useAuth();
-  const { isAdmin } = useRole();
+  const { isAdmin, isStaff } = useRole();
   const { toast } = useToast();
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -30,6 +31,10 @@ const Suppliers = () => {
   };
 
   useEffect(() => { fetchSuppliers(); }, [user]);
+
+  if (isStaff) {
+    return <Navigate to="/" replace />;
+  }
 
   const filtered = suppliers.filter(s =>
     s.name.toLowerCase().includes(search.toLowerCase()) ||

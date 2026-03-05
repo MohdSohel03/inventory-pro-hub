@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Navigate } from "react-router-dom";
 import { Plus, Search, Trash2 } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -12,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Purchases = () => {
   const { user } = useAuth();
-  const { isAdmin } = useRole();
+  const { isAdmin, isStaff } = useRole();
   const { toast } = useToast();
   const [purchases, setPurchases] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
@@ -36,6 +37,10 @@ const Purchases = () => {
   };
 
   useEffect(() => { fetchData(); }, [user]);
+
+  if (isStaff) {
+    return <Navigate to="/" replace />;
+  }
 
   const filtered = purchases.filter(p => p.supplier_name.toLowerCase().includes(search.toLowerCase()));
   const total = items.reduce((s, i) => s + i.quantity * i.cost, 0);
