@@ -6,10 +6,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Camera } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 
 const Profile = () => {
   const { user } = useAuth();
+  const { isAdmin, isStaff } = useRole();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
@@ -17,7 +19,6 @@ const Profile = () => {
     email: "",
     phone: "",
     company: "",
-    role: "user",
   });
 
   useEffect(() => {
@@ -29,7 +30,6 @@ const Profile = () => {
           email: data.email || "",
           phone: data.phone || "",
           company: data.company || "",
-          role: data.role || "user",
         });
       }
     });
@@ -70,7 +70,7 @@ const Profile = () => {
           </div>
           <div>
             <h2 className="text-lg font-semibold text-foreground">{form.full_name || "User"}</h2>
-            <p className="text-sm text-muted-foreground capitalize">{form.role}</p>
+            <p className="text-sm text-muted-foreground capitalize">{isAdmin ? "Admin" : isStaff ? "Staff" : "User"}</p>
           </div>
         </div>
 
@@ -93,7 +93,7 @@ const Profile = () => {
           </div>
           <div className="sm:col-span-2">
             <Label>Role</Label>
-            <Input value={form.role} disabled className="opacity-60" />
+            <Input value={isAdmin ? "Admin" : isStaff ? "Staff" : "User"} disabled className="opacity-60" />
           </div>
         </div>
 

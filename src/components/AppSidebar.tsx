@@ -5,14 +5,17 @@ import {
 } from "lucide-react";
 import { useRole } from "@/contexts/RoleContext";
 
-const navItems = [
+const commonNavItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
   { label: "Products", icon: Package, path: "/products" },
-  { label: "Suppliers", icon: Users, path: "/suppliers" },
-  { label: "Purchases", icon: ShoppingCart, path: "/purchases" },
   { label: "Sales", icon: DollarSign, path: "/sales" },
   { label: "Reports", icon: BarChart3, path: "/reports" },
   { label: "Stock Alerts", icon: AlertTriangle, path: "/stock-alerts" },
+];
+
+const adminOnlyNavItems = [
+  { label: "Suppliers", icon: Users, path: "/suppliers" },
+  { label: "Purchases", icon: ShoppingCart, path: "/purchases" },
 ];
 
 const bottomItems = [
@@ -30,8 +33,8 @@ export function AppSidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen 
   const { isAdmin } = useRole();
 
   const allNavItems = isAdmin
-    ? [...navItems, { label: "Staff", icon: UserPlus, path: "/staff" }]
-    : navItems;
+    ? [...commonNavItems, ...adminOnlyNavItems, { label: "Staff", icon: UserPlus, path: "/staff" }]
+    : commonNavItems;
 
   const sidebarContent = (
     <>
