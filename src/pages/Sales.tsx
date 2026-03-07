@@ -7,10 +7,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 
 const Sales = () => {
   const { user } = useAuth();
+  const { adminId, isStaff } = useRole();
   const { toast } = useToast();
   const [sales, setSales] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
@@ -45,8 +47,9 @@ const Sales = () => {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
+    const effectiveUserId = isStaff && adminId ? adminId : user.id;
     const { error } = await supabase.from("sales").insert({
-      user_id: user.id,
+      user_id: effectiveUserId,
       date: new Date().toISOString().split("T")[0],
       customer,
       items: items.length,
