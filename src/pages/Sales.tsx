@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 
 const Sales = () => {
   const { user } = useAuth();
+  const { adminId, isStaff } = useRole();
   const { toast } = useToast();
   const [sales, setSales] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
