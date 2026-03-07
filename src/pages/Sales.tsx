@@ -47,8 +47,9 @@ const Sales = () => {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
+    const effectiveUserId = isStaff && adminId ? adminId : user.id;
     const { error } = await supabase.from("sales").insert({
-      user_id: user.id,
+      user_id: effectiveUserId,
       date: new Date().toISOString().split("T")[0],
       customer,
       items: items.length,
