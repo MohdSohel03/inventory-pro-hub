@@ -247,6 +247,9 @@ const Settings = () => {
             </button>
           ))}
         </div>
+        <Button onClick={() => { applyTheme(themeMode); toast({ title: "Theme updated" }); }} variant="outline" className="gap-2">
+          Apply Theme
+        </Button>
       </div>
 
       {/* App Preferences */}
