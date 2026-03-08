@@ -267,17 +267,17 @@ const Sales = () => {
             <div className="bg-muted/30 rounded-lg p-3 border border-border">
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-sm text-muted-foreground mt-1">
                   <span>Discount ({discount}%)</span>
-                  <span>-₹{(subtotal * discount / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                  <span>-{formatCurrency(subtotal * discount / 100)}</span>
                 </div>
               )}
               <div className="flex justify-between text-base font-bold text-foreground mt-2 pt-2 border-t border-border">
                 <span>Total</span>
-                <span>₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                <span>{formatCurrency(total)}</span>
               </div>
             </div>
           </div>
