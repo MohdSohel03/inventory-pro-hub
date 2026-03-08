@@ -18,6 +18,7 @@ const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3
 const Dashboard = () => {
   const { user } = useAuth();
   const { isAdmin } = useRole();
+  const { formatCurrency, currencySymbol, formatDate } = useAppSettings();
   const [products, setProducts] = useState<any[]>([]);
   const [sales, setSales] = useState<any[]>([]);
   const [purchases, setPurchases] = useState<any[]>([]);

@@ -16,6 +16,7 @@ const Purchases = () => {
   const { user } = useAuth();
   const { isAdmin, isStaff } = useRole();
   const { toast } = useToast();
+  const { formatCurrency, formatDate } = useAppSettings();
   const [purchases, setPurchases] = useState<any[]>([]);
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);

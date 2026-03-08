@@ -16,6 +16,7 @@ const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cos
 
 const Products = () => {
   const { user } = useAuth();
+  const { formatCurrency } = useAppSettings();
   const { isAdmin } = useRole();
   const { toast } = useToast();
   const [products, setProducts] = useState<any[]>([]);

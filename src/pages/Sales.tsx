@@ -20,6 +20,7 @@ const Sales = () => {
   const { user } = useAuth();
   const { adminId, isStaff } = useRole();
   const { toast } = useToast();
+  const { formatCurrency, currencySymbol, formatDate } = useAppSettings();
   const [sales, setSales] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");

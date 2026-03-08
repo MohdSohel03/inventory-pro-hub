@@ -50,6 +50,7 @@ const StockTooltip = ({ active, payload, label }: any) => {
 const Reports = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { formatCurrency, currencySymbol } = useAppSettings();
   const [period, setPeriod] = useState("monthly");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
