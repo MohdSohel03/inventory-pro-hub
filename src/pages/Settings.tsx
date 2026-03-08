@@ -241,16 +241,43 @@ const Settings = () => {
     <div className="p-3 sm:p-6 max-w-[800px] mx-auto space-y-4">
       {/* Appearance */}
       <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
-        <SectionHeader title="Appearance" subtitle="Customize how StockPilot looks" />
-        <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            {isDark ? <Moon className="w-5 h-5 text-primary shrink-0" /> : <Sun className="w-5 h-5 text-primary shrink-0" />}
-            <div className="min-w-0">
-              <Label className="text-foreground font-medium">Dark Mode</Label>
-              <p className="text-xs text-muted-foreground">Toggle between light and dark theme</p>
-            </div>
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center">
+            <Palette className="w-5 h-5 text-primary" />
           </div>
-          <Switch checked={isDark} onCheckedChange={setIsDark} />
+          <div>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">Appearance</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">Theme & display settings</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-3">
+          {([
+            { value: "dark" as const, label: "Dark", icon: Moon },
+            { value: "light" as const, label: "Light", icon: Sun },
+            { value: "system" as const, label: "System", icon: Monitor },
+          ]).map(({ value, label, icon: Icon }) => (
+            <button
+              key={value}
+              onClick={() => setThemeMode(value)}
+              className={`flex flex-col items-center gap-2.5 p-4 rounded-xl border-2 transition-all ${
+                themeMode === value
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-muted-foreground/30 hover:bg-muted/30"
+              }`}
+            >
+              <div className={`w-12 h-7 rounded-full flex items-center px-1 transition-colors ${
+                value === "dark" ? "bg-muted-foreground/30" : value === "light" ? "bg-muted-foreground/20" : "bg-gradient-to-r from-muted-foreground/30 to-muted-foreground/15"
+              }`}>
+                <div className={`w-5 h-5 rounded-full transition-transform ${
+                  value === "dark" ? "translate-x-5 bg-foreground" : value === "light" ? "translate-x-0 bg-muted-foreground" : "translate-x-2.5 bg-gradient-to-r from-foreground to-muted-foreground"
+                }`} />
+              </div>
+              <span className={`text-sm font-medium ${themeMode === value ? "text-primary" : "text-muted-foreground"}`}>
+                {label}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
 
