@@ -316,7 +316,19 @@ const Products = () => {
               <Label>SKU <span className="text-xs text-muted-foreground font-normal">{!editProduct ? "(auto-generated if empty)" : ""}</span></Label>
               <Input value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} placeholder={!editProduct ? "Leave blank to auto-generate" : ""} />
             </div>
-            <div><Label>Category</Label><Input value={form.category} onChange={e => setForm({...form, category: e.target.value})} /></div>
+            <div>
+              <Label>Category</Label>
+              <Select value={categories.includes(form.category) ? form.category : "__custom__"} onValueChange={v => { if (v !== "__custom__") setForm({...form, category: v}); }}>
+                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                <SelectContent>
+                  {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  <SelectItem value="__custom__">+ New category</SelectItem>
+                </SelectContent>
+              </Select>
+              {!categories.includes(form.category) && (
+                <Input className="mt-2" value={form.category} onChange={e => setForm({...form, category: e.target.value})} placeholder="Enter new category name" />
+              )}
+            </div>
             <div className="sm:col-span-2">
               <Label>Barcode</Label>
               <div className="flex gap-2">
