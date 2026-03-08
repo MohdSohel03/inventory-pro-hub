@@ -145,7 +145,7 @@ const Purchases = () => {
                 ))}
               </div>
             </div>
-            <div className="text-right text-lg font-bold text-foreground">Total: ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
+            <div className="text-right text-lg font-bold text-foreground">Total: {formatCurrency(total)}</div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={() => setShowAdd(false)} className="w-full sm:w-auto">Cancel</Button>

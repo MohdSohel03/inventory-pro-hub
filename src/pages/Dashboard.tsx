@@ -241,10 +241,10 @@ const Dashboard = () => {
               )}
               {sales.slice(0, 5).map((sale) => (
                 <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{sale.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(sale.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{sale.customer}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{sale.items}</td>
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-mono text-xs sm:text-sm">₹{Number(sale.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-mono text-xs sm:text-sm">{formatCurrency(Number(sale.total))}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center text-xs sm:text-sm">{sale.payment}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">
                     <span className={sale.status === "Completed" ? "status-in-stock" : "status-low-stock"}>
