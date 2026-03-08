@@ -106,30 +106,29 @@ const Settings = () => {
   // Data export
   const [exporting, setExporting] = useState(false);
 
-  // Theme effect
+  const applyTheme = (mode: "dark" | "light" | "system") => {
+    let isDark: boolean;
+    if (mode === "system") {
+      isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    } else {
+      isDark = mode === "dark";
+    }
+    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.classList.toggle("light", !isDark);
+    localStorage.setItem("theme", isDark ? "dark" : "light");
+    localStorage.setItem("theme_mode", mode);
+  };
+
+  // Listen for system theme changes when in "system" mode
   useEffect(() => {
-    const applyTheme = (mode: "dark" | "light" | "system") => {
-      let isDark: boolean;
-      if (mode === "system") {
-        isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      } else {
-        isDark = mode === "dark";
-      }
-      document.documentElement.classList.toggle("dark", isDark);
-      document.documentElement.classList.toggle("light", !isDark);
-      localStorage.setItem("theme", isDark ? "dark" : "light");
-      localStorage.setItem("theme_mode", mode);
-    };
-
-    applyTheme(themeMode);
-
-    if (themeMode === "system") {
+    const savedMode = (localStorage.getItem("theme_mode") as "dark" | "light" | "system") || "dark";
+    if (savedMode === "system") {
       const mq = window.matchMedia("(prefers-color-scheme: dark)");
       const handler = () => applyTheme("system");
       mq.addEventListener("change", handler);
       return () => mq.removeEventListener("change", handler);
     }
-  }, [themeMode]);
+  }, []);
 
 
   const handleSavePreferences = () => {
