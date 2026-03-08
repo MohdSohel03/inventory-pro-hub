@@ -155,7 +155,7 @@ const Reports = () => {
           </div>
         </div>
         <div className="sm:ml-auto">
-          <Button onClick={handleExportSales} variant="outline" size="sm"><Download className="w-4 h-4 mr-1.5" />Export Sales CSV</Button>
+          <Button onClick={handleExportSales} variant="outline" size="sm"><Download className="w-4 h-4 mr-1.5" /><span className="hidden sm:inline">Export Sales</span> CSV</Button>
         </div>
       </div>
 
