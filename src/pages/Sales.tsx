@@ -70,7 +70,7 @@ const Sales = () => {
       // Check if already in items list
       const existingIdx = items.findIndex(i => i.product === found.name);
       if (existingIdx >= 0) {
-        updateItem(existingIdx, "quantity", items[existingIdx].quantity + 1);
+        updateItem(existingIdx, { quantity: items[existingIdx].quantity + 1 });
       } else {
         // Add to first empty slot or append
         const emptyIdx = items.findIndex(i => !i.product);
