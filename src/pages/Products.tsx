@@ -129,7 +129,7 @@ const Products = () => {
               <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
                 <ScanLine className="w-4 h-4 mr-1 sm:mr-2" />Scan Product
               </Button>
-              <Button size="sm" onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}>
+              <Button size="sm" onClick={() => { setForm(emptyProduct); setEditProduct(null); setCustomCategory(false); setCustomLocation(false); setShowAdd(true); }}>
                 <Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Product
               </Button>
             </>
