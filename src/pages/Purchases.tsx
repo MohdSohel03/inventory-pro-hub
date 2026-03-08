@@ -69,7 +69,8 @@ const Purchases = () => {
     setEditingId(p.id);
     setSupplier(p.supplier_name);
     setStatus(p.status);
-    setItems([{ product: "", quantity: p.items, cost: p.items > 0 ? Number(p.total) / p.items : 0 }]);
+    setEditItemsCount(p.items);
+    setEditTotal(Number(p.total));
     setShowDialog(true);
   };
 
