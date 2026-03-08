@@ -207,7 +207,7 @@ const Reports = () => {
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6 opacity-0 animate-fade-in">
         <div className="flex bg-card border border-border rounded-lg overflow-hidden w-full sm:w-auto">
           {["daily", "weekly", "monthly"].map(p => (
             <button
