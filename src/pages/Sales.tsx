@@ -33,6 +33,7 @@ const Sales = () => {
   const [discount, setDiscount] = useState(0);
   const [items, setItems] = useState([{ product: "", quantity: 1, price: 0 }]);
   const [saving, setSaving] = useState(false);
+  const [showSaleScanner, setShowSaleScanner] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
