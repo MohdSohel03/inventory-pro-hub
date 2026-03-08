@@ -49,9 +49,7 @@ const Signup = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4">
       <div className="w-full max-w-md">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-primary flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
-            <Package className="w-7 h-7 text-primary-foreground" />
-          </div>
+          <img src={inventProLogo} alt="InventPro" className="w-14 h-14 rounded-2xl mb-4 shadow-lg shadow-primary/20 object-contain" />
           <h1 className="text-2xl font-bold text-foreground">Create account</h1>
           <p className="text-muted-foreground mt-1">Get started with InventPro</p>
         </div>
