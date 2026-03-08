@@ -262,7 +262,10 @@ const Sales = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label>Products <span className="text-destructive">*</span></Label>
-                <Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setShowSaleScanner(true)}><ScanLine className="w-3 h-3 mr-1" />Scan</Button>
+                  <Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button>
+                </div>
               </div>
               <div className="space-y-2">
                 {items.map((item, i) => {
