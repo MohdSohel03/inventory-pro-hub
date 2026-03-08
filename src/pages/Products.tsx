@@ -14,7 +14,14 @@ import { useAppSettings } from "@/contexts/AppSettingsContext";
 import { BarcodeScanner } from "@/components/products/BarcodeScanner";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 
-const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "", image_url: null as string | null };
+const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "", image_url: null as string | null, barcode: "" };
+
+const generateSKU = (category: string, existingCount: number) => {
+  const prefix = category.slice(0, 3).toUpperCase();
+  const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+  const seq = String(existingCount + 1).padStart(3, "0");
+  return `${prefix}-${timestamp}${seq}`;
+};
 
 const Products = () => {
   const { user } = useAuth();
