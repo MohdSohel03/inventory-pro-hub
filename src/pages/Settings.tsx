@@ -132,6 +132,8 @@ const Settings = () => {
 
 
   const handleSavePreferences = () => {
+    // Apply theme only on save
+    applyTheme(themeMode);
     localStorage.setItem("default_min_stock", defaultMinStock);
     localStorage.setItem("app_currency", currency);
     localStorage.setItem("app_date_format", dateFormat);
