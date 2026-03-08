@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Navigate } from "react-router-dom";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2, Pencil } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,7 +19,8 @@ const Suppliers = () => {
   const { toast } = useToast();
   const [suppliers, setSuppliers] = useState<any[]>([]);
   const [search, setSearch] = useState("");
-  const [showAdd, setShowAdd] = useState(false);
+  const [showDialog, setShowDialog] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [form, setForm] = useState(emptySupplier);
   const [saving, setSaving] = useState(false);
@@ -41,17 +42,43 @@ const Suppliers = () => {
     (s.contact || "").toLowerCase().includes(search.toLowerCase())
   );
 
+  const openAdd = () => {
+    setEditingId(null);
+    setForm(emptySupplier);
+    setShowDialog(true);
+  };
+
+  const openEdit = (s: any) => {
+    setEditingId(s.id);
+    setForm({ name: s.name, contact: s.contact || "", email: s.email || "", phone: s.phone || "", address: s.address || "" });
+    setShowDialog(true);
+  };
+
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("suppliers").insert({ ...form, user_id: user.id });
-    setSaving(false);
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
+    if (editingId) {
+      const { error } = await supabase.from("suppliers").update(form).eq("id", editingId);
+      setSaving(false);
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        setShowDialog(false);
+        setEditingId(null);
+        setForm(emptySupplier);
+        fetchSuppliers();
+        toast({ title: "Supplier updated successfully" });
+      }
     } else {
-      setShowAdd(false);
-      setForm(emptySupplier);
-      fetchSuppliers();
+      const { error } = await supabase.from("suppliers").insert({ ...form, user_id: user.id });
+      setSaving(false);
+      if (error) {
+        toast({ title: "Error", description: error.message, variant: "destructive" });
+      } else {
+        setShowDialog(false);
+        setForm(emptySupplier);
+        fetchSuppliers();
+      }
     }
   };
 
@@ -65,7 +92,7 @@ const Suppliers = () => {
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4 opacity-0 animate-fade-in">
-        {isAdmin && <Button size="sm" className="sm:size-default" onClick={() => { setForm(emptySupplier); setShowAdd(true); }}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Supplier</Button>}
+        {isAdmin && <Button size="sm" className="sm:size-default" onClick={openAdd}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Supplier</Button>}
       </div>
 
       <div className="relative max-w-md mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
@@ -82,7 +109,12 @@ const Suppliers = () => {
           <div key={s.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 opacity-0 animate-fade-in-scale" style={{ animationDelay: `${200 + idx * 80}ms` }}>
             <div className="flex justify-between items-start">
               <h3 className="font-semibold text-foreground text-sm sm:text-base">{s.name}</h3>
-              {isAdmin && <button onClick={() => setDeleteId(s.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>}
+              {isAdmin && (
+                <div className="flex gap-1">
+                  <button onClick={() => openEdit(s)} className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => setDeleteId(s.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                </div>
+              )}
             </div>
             <p className="text-xs sm:text-sm text-muted-foreground mt-2">{s.contact}</p>
             <p className="text-xs sm:text-sm text-primary mt-1 break-all">{s.email}</p>
@@ -92,9 +124,9 @@ const Suppliers = () => {
         ))}
       </div>
 
-      <Dialog open={showAdd} onOpenChange={setShowAdd}>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Add Supplier</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>{editingId ? "Edit Supplier" : "Add Supplier"}</DialogTitle></DialogHeader>
           <div className="space-y-3 py-4">
             <div><Label>Company Name</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
             <div><Label>Contact Person</Label><Input value={form.contact} onChange={e => setForm({...form, contact: e.target.value})} /></div>
@@ -103,8 +135,8 @@ const Suppliers = () => {
             <div><Label>Address</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button variant="outline" onClick={() => setShowAdd(false)} className="w-full sm:w-auto">Cancel</Button>
-            <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">{saving ? "Saving..." : "Add Supplier"}</Button>
+            <Button variant="outline" onClick={() => setShowDialog(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">{saving ? "Saving..." : editingId ? "Update Supplier" : "Add Supplier"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
