@@ -63,9 +63,9 @@ const Suppliers = () => {
   };
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
+    <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4">
-        {isAdmin && <Button onClick={() => { setForm(emptySupplier); setShowAdd(true); }}><Plus className="w-4 h-4 mr-2" />Add Supplier</Button>}
+        {isAdmin && <Button size="sm" className="sm:size-default" onClick={() => { setForm(emptySupplier); setShowAdd(true); }}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Supplier</Button>}
       </div>
 
       <div className="relative max-w-md mb-4">
@@ -77,23 +77,23 @@ const Suppliers = () => {
         <div className="text-center py-12 text-muted-foreground">No suppliers yet. Add your first supplier!</div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
         {filtered.map(s => (
-          <div key={s.id} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
+          <div key={s.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-colors">
             <div className="flex justify-between items-start">
-              <h3 className="font-semibold text-foreground">{s.name}</h3>
+              <h3 className="font-semibold text-foreground text-sm sm:text-base">{s.name}</h3>
               {isAdmin && <button onClick={() => setDeleteId(s.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>}
             </div>
-            <p className="text-sm text-muted-foreground mt-2">{s.contact}</p>
-            <p className="text-sm text-primary mt-1">{s.email}</p>
-            <p className="text-sm text-muted-foreground mt-1">{s.phone}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-2">{s.contact}</p>
+            <p className="text-xs sm:text-sm text-primary mt-1 break-all">{s.email}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-1">{s.phone}</p>
             <p className="text-xs text-muted-foreground mt-2">{s.address}</p>
           </div>
         ))}
       </div>
 
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Add Supplier</DialogTitle></DialogHeader>
           <div className="space-y-3 py-4">
             <div><Label>Company Name</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
@@ -102,9 +102,9 @@ const Suppliers = () => {
             <div><Label>Phone</Label><Input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} /></div>
             <div><Label>Address</Label><Input value={form.address} onChange={e => setForm({...form, address: e.target.value})} /></div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleSave} disabled={saving}>{saving ? "Saving..." : "Add Supplier"}</Button>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowAdd(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">{saving ? "Saving..." : "Add Supplier"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -93,10 +93,10 @@ const StaffManagement = () => {
   };
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
+    <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4">
-        <Button onClick={() => setShowAdd(true)}>
-          <Plus className="w-4 h-4 mr-2" />Add Staff
+        <Button size="sm" className="sm:size-default" onClick={() => setShowAdd(true)}>
+          <Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Staff
         </Button>
       </div>
 
@@ -108,13 +108,13 @@ const StaffManagement = () => {
           <p className="text-muted-foreground">No staff members yet. Add your first staff member!</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {staff.map(s => (
-            <div key={s.id} className="bg-card border border-border rounded-xl p-5 hover:border-primary/30 transition-colors">
+            <div key={s.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-colors">
               <div className="flex justify-between items-start">
-                <div>
-                  <h3 className="font-semibold text-foreground">{s.full_name || "Unnamed"}</h3>
-                  <p className="text-sm text-primary mt-1">{s.email}</p>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{s.full_name || "Unnamed"}</h3>
+                  <p className="text-xs sm:text-sm text-primary mt-1 break-all">{s.email}</p>
                   <p className="text-xs text-muted-foreground mt-1">
                     Role: <span className="font-medium">Staff</span>
                   </p>
@@ -124,7 +124,7 @@ const StaffManagement = () => {
                 </div>
                 <button
                   onClick={() => setDeleteId(s.id)}
-                  className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                  className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors shrink-0"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -135,7 +135,7 @@ const StaffManagement = () => {
       )}
 
       <Dialog open={showAdd} onOpenChange={v => { if (!v) setShowAdd(false); }}>
-        <DialogContent>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Add Staff Member</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div>
@@ -167,9 +167,9 @@ const StaffManagement = () => {
               <p className="text-xs text-muted-foreground mt-1">Staff will use this email & password to login</p>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleAddStaff} disabled={saving}>{saving ? "Adding..." : "Add Staff"}</Button>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowAdd(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button onClick={handleAddStaff} disabled={saving} className="w-full sm:w-auto">{saving ? "Adding..." : "Add Staff"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
