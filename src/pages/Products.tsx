@@ -100,11 +100,7 @@ const Products = () => {
 
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-between mb-4 opacity-0 animate-fade-in">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Products</h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Manage your product catalog</p>
-        </div>
+      <div className="flex items-center justify-end mb-4 opacity-0 animate-fade-in">
         <div className="flex items-center gap-2">
           {isAdmin && (
             <>
