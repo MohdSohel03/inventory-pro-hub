@@ -157,7 +157,7 @@ const Purchases = () => {
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(p.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{p.items}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">{formatCurrency(Number(p.total))}</td>
-                  <td className="py-2 sm:py-3 px-3 sm:px-4"><span className={p.status === "Received" ? "status-in-stock" : "status-low-stock"}>{p.status}</span></td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4"><span className={p.status === "Received" ? "status-in-stock" : p.status === "Cancelled" ? "status-out-of-stock" : "status-low-stock"}>{p.status}</span></td>
                   {isAdmin && (
                     <td className="py-2 sm:py-3 px-3 sm:px-4">
                       <div className="flex gap-1">
