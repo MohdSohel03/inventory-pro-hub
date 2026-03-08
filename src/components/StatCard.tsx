@@ -23,7 +23,7 @@ export function StatCard({ title, value, subtitle, trend, icon, iconColor = "tex
           {subtitle && <p className="text-xs sm:text-sm text-muted-foreground mt-1 truncate">{subtitle}</p>}
           {trend && <p className="text-xs sm:text-sm text-success font-medium mt-1 truncate">{trend}</p>}
         </div>
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 ${iconColor}`}>
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 ${iconColor} group-hover:scale-110 transition-transform duration-300`}>
           {icon}
         </div>
       </div>
