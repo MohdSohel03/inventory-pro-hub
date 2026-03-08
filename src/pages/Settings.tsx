@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  Sun, Moon, Globe, DollarSign, Bell, BellOff, Package, Shield,
-  Download, Trash2, AlertTriangle, Clock, Hash, Loader2
+  Sun, Moon, Monitor, Globe, DollarSign, Bell, BellOff, Package, Shield,
+  Download, Trash2, AlertTriangle, Clock, Hash, Loader2, Palette
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
