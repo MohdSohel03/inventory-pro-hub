@@ -86,16 +86,27 @@ const Dashboard = () => {
     { name: "Out of Stock", value: outOfStock, fill: "hsl(var(--chart-5))" },
   ].filter(s => s.value > 0);
 
-  const salesByMonth: Record<string, { sales: number; purchases: number }> = {};
+  // Daily sales & purchases trend (last 7 days)
+  const salesByDay: Record<string, { sales: number; purchases: number }> = {};
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    salesByDay[key] = { sales: 0, purchases: 0 };
+  }
   sales.forEach(s => {
-    const m = s.date?.slice(0, 7);
-    if (m) { salesByMonth[m] = salesByMonth[m] || { sales: 0, purchases: 0 }; salesByMonth[m].sales += Number(s.total); }
+    const d = s.date?.slice(0, 10);
+    if (d && salesByDay[d] !== undefined) salesByDay[d].sales += Number(s.total);
   });
   purchases.forEach(p => {
-    const m = p.date?.slice(0, 7);
-    if (m) { salesByMonth[m] = salesByMonth[m] || { sales: 0, purchases: 0 }; salesByMonth[m].purchases += Number(p.total); }
+    const d = p.date?.slice(0, 10);
+    if (d && salesByDay[d] !== undefined) salesByDay[d].purchases += Number(p.total);
   });
-  const salesTrend = Object.entries(salesByMonth).sort().slice(-6).map(([month, d]) => ({ month, ...d }));
+  const salesTrend = Object.entries(salesByDay).map(([date, d]) => ({
+    day: new Date(date).toLocaleDateString("en-IN", { weekday: "short", day: "2-digit" }),
+    ...d,
+  }));
 
   const topProducts = products.slice(0, 5).map(p => ({ name: p.name, stock: p.stock }));
 
