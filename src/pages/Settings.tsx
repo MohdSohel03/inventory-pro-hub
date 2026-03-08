@@ -201,7 +201,7 @@ const Settings = () => {
   };
 
   const selectedCurrency = CURRENCIES.find(c => c.value === currency);
-  const selectedLanguage = LANGUAGES.find(l => l.value === language);
+  
 
   return (
     <div className="p-3 sm:p-6 max-w-[800px] mx-auto space-y-4">
