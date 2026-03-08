@@ -42,10 +42,9 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "Only admins can manage staff" }), { status: 403, headers: corsHeaders });
     }
 
-    const { action, email, password, full_name, staff_user_id } = await req.json();
+    const { action, email, password, full_name, staff_user_id, phone, company } = await req.json();
 
     if (action === "create") {
-      // Create auth user
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
         email,
         password,
@@ -57,13 +56,11 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: createError.message }), { status: 400, headers: corsHeaders });
       }
 
-      // The trigger auto-creates an 'admin' role. We need to update it to 'staff' with admin_id.
       await supabaseAdmin
         .from("user_roles")
         .update({ role: "staff", admin_id: callingUser.id })
         .eq("user_id", newUser.user!.id);
 
-      // Update profile name
       await supabaseAdmin
         .from("profiles")
         .update({ full_name: full_name || "" })
@@ -72,7 +69,11 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ success: true, user_id: newUser.user!.id }), { headers: corsHeaders });
     }
 
-    if (action === "delete") {
+    if (action === "update") {
+      if (!staff_user_id) {
+        return new Response(JSON.stringify({ error: "staff_user_id is required" }), { status: 400, headers: corsHeaders });
+      }
+
       // Verify the staff belongs to this admin
       const { data: staffRole } = await supabaseAdmin
         .from("user_roles")
@@ -86,7 +87,57 @@ Deno.serve(async (req) => {
         return new Response(JSON.stringify({ error: "Staff not found" }), { status: 404, headers: corsHeaders });
       }
 
-      // Delete auth user (cascades to user_roles and profiles)
+      // Update profile
+      const profileUpdates: Record<string, string> = {};
+      if (full_name !== undefined) profileUpdates.full_name = full_name;
+      if (phone !== undefined) profileUpdates.phone = phone;
+      if (company !== undefined) profileUpdates.company = company;
+
+      if (Object.keys(profileUpdates).length > 0) {
+        const { error: profileError } = await supabaseAdmin
+          .from("profiles")
+          .update(profileUpdates)
+          .eq("id", staff_user_id);
+
+        if (profileError) {
+          return new Response(JSON.stringify({ error: profileError.message }), { status: 400, headers: corsHeaders });
+        }
+      }
+
+      // Update email if provided
+      if (email) {
+        const { error: emailError } = await supabaseAdmin.auth.admin.updateUserById(staff_user_id, { email });
+        if (emailError) {
+          return new Response(JSON.stringify({ error: emailError.message }), { status: 400, headers: corsHeaders });
+        }
+        // Also update email in profiles
+        await supabaseAdmin.from("profiles").update({ email }).eq("id", staff_user_id);
+      }
+
+      // Update password if provided
+      if (password) {
+        const { error: pwError } = await supabaseAdmin.auth.admin.updateUserById(staff_user_id, { password });
+        if (pwError) {
+          return new Response(JSON.stringify({ error: pwError.message }), { status: 400, headers: corsHeaders });
+        }
+      }
+
+      return new Response(JSON.stringify({ success: true }), { headers: corsHeaders });
+    }
+
+    if (action === "delete") {
+      const { data: staffRole } = await supabaseAdmin
+        .from("user_roles")
+        .select("*")
+        .eq("user_id", staff_user_id)
+        .eq("admin_id", callingUser.id)
+        .eq("role", "staff")
+        .single();
+
+      if (!staffRole) {
+        return new Response(JSON.stringify({ error: "Staff not found" }), { status: 404, headers: corsHeaders });
+      }
+
       const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(staff_user_id);
       if (deleteError) {
         return new Response(JSON.stringify({ error: deleteError.message }), { status: 400, headers: corsHeaders });
