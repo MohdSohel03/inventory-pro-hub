@@ -1,9 +1,13 @@
 import { useState, useEffect } from "react";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Search, Trash2, ShoppingCart, Download } from "lucide-react";
+import { Plus, Search, Trash2, ShoppingCart, Download, CalendarIcon, X } from "lucide-react";
 import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
@@ -18,6 +22,8 @@ const Sales = () => {
   const [sales, setSales] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
   const [showAdd, setShowAdd] = useState(false);
   const [customer, setCustomer] = useState("");
   const [payment, setPayment] = useState("Cash");
@@ -37,11 +43,16 @@ const Sales = () => {
 
   useEffect(() => { fetchData(); }, [user]);
 
-  const filtered = sales.filter(s =>
-    s.customer.toLowerCase().includes(search.toLowerCase()) ||
-    s.date?.includes(search) ||
-    s.payment?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = sales.filter(s => {
+    const matchesSearch = s.customer.toLowerCase().includes(search.toLowerCase()) ||
+      s.date?.includes(search) ||
+      s.payment?.toLowerCase().includes(search.toLowerCase());
+    const saleDate = s.date ? new Date(s.date) : null;
+    const matchesFrom = !dateFrom || (saleDate && saleDate >= new Date(dateFrom.setHours(0, 0, 0, 0)));
+    const matchesTo = !dateTo || (saleDate && saleDate <= new Date(dateTo.setHours(23, 59, 59, 999)));
+    return matchesSearch && matchesFrom && matchesTo;
+  });
+  const hasDateFilter = dateFrom || dateTo;
   const subtotal = items.reduce((s, i) => s + i.quantity * i.price, 0);
   const total = subtotal * (1 - discount / 100);
 
@@ -125,9 +136,41 @@ const Sales = () => {
         <Button onClick={() => setShowAdd(true)} size="sm" className="sm:size-default"><Plus className="w-4 h-4 mr-1 sm:mr-2" /><span>Create Sale</span></Button>
       </div>
 
-      <div className="relative max-w-md mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Search by customer, date, payment..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Search by customer, date, payment..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}>
+                <CalendarIcon className="w-4 h-4 mr-1" />
+                {dateFrom ? format(dateFrom, "dd MMM yyyy") : "From"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+          <span className="text-muted-foreground text-sm">–</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !dateTo && "text-muted-foreground")}>
+                <CalendarIcon className="w-4 h-4 mr-1" />
+                {dateTo ? format(dateTo, "dd MMM yyyy") : "To"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+          {hasDateFilter && (
+            <Button variant="ghost" size="sm" onClick={() => { setDateFrom(undefined); setDateTo(undefined); }}>
+              <X className="w-4 h-4 mr-1" /> Clear
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">
