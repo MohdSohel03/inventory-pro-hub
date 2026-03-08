@@ -63,6 +63,9 @@ const Products = () => {
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
   const categories = [...new Set(products.map(p => p.category))];
+  const locations = [...new Set(products.map(p => p.location).filter(Boolean))];
+  const [customCategory, setCustomCategory] = useState(false);
+  const [customLocation, setCustomLocation] = useState(false);
 
   const handleSave = async () => {
     if (!user) return;
