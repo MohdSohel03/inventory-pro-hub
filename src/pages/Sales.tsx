@@ -186,6 +186,7 @@ const Sales = () => {
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end gap-2 mb-4 opacity-0 animate-fade-in">
+        <Button onClick={handleExportPDF} variant="outline" size="sm" className="sm:size-default"><FileText className="w-4 h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Export</span> PDF</Button>
         <Button onClick={handleExport} variant="outline" size="sm" className="sm:size-default"><Download className="w-4 h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Export</span> CSV</Button>
         <Button onClick={() => setShowAdd(true)} size="sm" className="sm:size-default"><Plus className="w-4 h-4 mr-1 sm:mr-2" /><span>Create Sale</span></Button>
       </div>
