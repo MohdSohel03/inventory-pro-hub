@@ -86,7 +86,9 @@ const Settings = () => {
   const navigate = useNavigate();
 
   // Appearance
-  const [isDark, setIsDark] = useState(() => !document.documentElement.classList.contains("light"));
+  const [themeMode, setThemeMode] = useState<"dark" | "light" | "system">(() => {
+    return (localStorage.getItem("theme_mode") as "dark" | "light" | "system") || "dark";
+  });
 
   // General
   const [currency, setCurrency] = useState(() => localStorage.getItem("app_currency") || "INR");
