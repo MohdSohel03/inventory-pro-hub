@@ -68,6 +68,10 @@ const Products = () => {
     if (!user) return;
     setSaving(true);
     const payload = { ...form };
+    // Auto-generate SKU for new products if empty
+    if (!editProduct && !payload.sku) {
+      payload.sku = generateSKU(payload.category, products.length);
+    }
     if (editProduct) {
       const { error } = await supabase.from("products").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", editProduct.id);
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
