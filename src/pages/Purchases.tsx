@@ -27,6 +27,8 @@ const Purchases = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [supplier, setSupplier] = useState("");
   const [status, setStatus] = useState("Pending");
+  const [editItemsCount, setEditItemsCount] = useState(0);
+  const [editTotal, setEditTotal] = useState(0);
   const [items, setItems] = useState([{ product: "", quantity: 1, cost: 0 }]);
   const [saving, setSaving] = useState(false);
 
@@ -67,7 +69,8 @@ const Purchases = () => {
     setEditingId(p.id);
     setSupplier(p.supplier_name);
     setStatus(p.status);
-    setItems([{ product: "", quantity: p.items, cost: p.items > 0 ? Number(p.total) / p.items : 0 }]);
+    setEditItemsCount(p.items);
+    setEditTotal(Number(p.total));
     setShowDialog(true);
   };
 
@@ -77,8 +80,8 @@ const Purchases = () => {
     if (editingId) {
       const { error } = await supabase.from("purchases").update({
         supplier_name: supplier,
-        items: items.length,
-        total,
+        items: editItemsCount,
+        total: editTotal,
         status,
       }).eq("id", editingId);
       setSaving(false);
@@ -196,27 +199,41 @@ const Purchases = () => {
                 </Select>
               </div>
             )}
-            <div>
-              <div className="flex items-center justify-between mb-2"><Label>Products</Label><Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
-              <div className="space-y-2">
-                {items.map((item, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end">
-                    <div className="flex-1">
-                      <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "cost", Number(p.cost_price)); }}>
-                        <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
-                        <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
-                      </Select>
+            {editingId ? (
+              <>
+                <div>
+                  <Label>Items Count</Label>
+                  <Input type="number" value={editItemsCount} onChange={e => setEditItemsCount(+e.target.value)} />
+                </div>
+                <div>
+                  <Label>Total Amount</Label>
+                  <Input type="number" value={editTotal} onChange={e => setEditTotal(+e.target.value)} />
+                </div>
+                <div className="text-right text-lg font-bold text-foreground">Total: {formatCurrency(editTotal)}</div>
+              </>
+            ) : (
+              <div>
+                <div className="flex items-center justify-between mb-2"><Label>Products</Label><Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
+                <div className="space-y-2">
+                  {items.map((item, i) => (
+                    <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end">
+                      <div className="flex-1">
+                        <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "cost", Number(p.cost_price)); }}>
+                          <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
+                          <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex gap-2 items-end">
+                        <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
+                        <Input type="number" className="w-28" placeholder="Cost" value={item.cost} onChange={e => updateItem(i, "cost", +e.target.value)} />
+                        {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
+                      </div>
                     </div>
-                    <div className="flex gap-2 items-end">
-                      <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
-                      <Input type="number" className="w-28" placeholder="Cost" value={item.cost} onChange={e => updateItem(i, "cost", +e.target.value)} />
-                      {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
+                <div className="text-right text-lg font-bold text-foreground mt-4">Total: {formatCurrency(total)}</div>
               </div>
-            </div>
-            <div className="text-right text-lg font-bold text-foreground">Total: {formatCurrency(total)}</div>
+            )}
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={() => setShowDialog(false)} className="w-full sm:w-auto">Cancel</Button>
