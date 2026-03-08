@@ -14,11 +14,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
+import { useAppSettings } from "@/contexts/AppSettingsContext";
 
 const Sales = () => {
   const { user } = useAuth();
   const { adminId, isStaff } = useRole();
   const { toast } = useToast();
+  const { formatCurrency, currencySymbol, formatDate } = useAppSettings();
   const [sales, setSales] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
@@ -103,7 +105,7 @@ const Sales = () => {
     }
 
     setSaving(false);
-    toast({ title: "Sale created!", description: `₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2 })} sale to ${customer.trim()}` });
+    toast({ title: "Sale created!", description: `${formatCurrency(total)} sale to ${customer.trim()}` });
     setShowAdd(false);
     setCustomer("");
     setDiscount(0);
@@ -122,7 +124,7 @@ const Sales = () => {
       { key: "customer", label: "Customer" },
       { key: "items", label: "Items" },
       { key: "discount", label: "Discount (%)" },
-      { key: "total", label: "Total (₹)" },
+      { key: "total", label: "Total" },
       { key: "payment", label: "Payment" },
       { key: "status", label: "Status" },
     ]);
@@ -194,11 +196,11 @@ const Sales = () => {
               )}
               {filtered.map(s => (
                 <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{s.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(s.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{s.customer}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{s.items}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4">{Number(s.discount)}%</td>
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">₹{Number(s.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">{formatCurrency(Number(s.total))}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{s.payment}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4"><span className={s.status === "Completed" ? "status-in-stock" : "status-low-stock"}>{s.status}</span></td>
                 </tr>
@@ -265,17 +267,17 @@ const Sales = () => {
             <div className="bg-muted/30 rounded-lg p-3 border border-border">
               <div className="flex justify-between text-sm text-muted-foreground">
                 <span>Subtotal</span>
-                <span>₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                <span>{formatCurrency(subtotal)}</span>
               </div>
               {discount > 0 && (
                 <div className="flex justify-between text-sm text-muted-foreground mt-1">
                   <span>Discount ({discount}%)</span>
-                  <span>-₹{(subtotal * discount / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                  <span>-{formatCurrency(subtotal * discount / 100)}</span>
                 </div>
               )}
               <div className="flex justify-between text-base font-bold text-foreground mt-2 pt-2 border-t border-border">
                 <span>Total</span>
-                <span>₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                <span>{formatCurrency(total)}</span>
               </div>
             </div>
           </div>

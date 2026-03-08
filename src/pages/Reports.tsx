@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
+import { useAppSettings } from "@/contexts/AppSettingsContext";
 
 const PERIOD_LABELS: Record<string, string> = {
   daily: "Daily",
@@ -18,14 +19,14 @@ const PERIOD_LABELS: Record<string, string> = {
   monthly: "Monthly",
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, currencySymbol = "₹", locale = "en-IN" }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg text-sm">
       <p className="text-muted-foreground text-xs mb-1">{label}</p>
       {payload.map((entry: any, i: number) => (
         <p key={i} className="font-semibold" style={{ color: entry.color }}>
-          {entry.name}: ₹{Number(entry.value).toLocaleString("en-IN")}
+          {entry.name}: {currencySymbol}{Number(entry.value).toLocaleString(locale)}
         </p>
       ))}
     </div>
@@ -49,6 +50,7 @@ const StockTooltip = ({ active, payload, label }: any) => {
 const Reports = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const { formatCurrency, currencySymbol } = useAppSettings();
   const [period, setPeriod] = useState("monthly");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -179,7 +181,7 @@ const Reports = () => {
       { key: "customer", label: "Customer" },
       { key: "items", label: "Items" },
       { key: "discount", label: "Discount (%)" },
-      { key: "total", label: "Total (₹)" },
+      { key: "total", label: "Total" },
       { key: "payment", label: "Payment" },
       { key: "status", label: "Status" },
     ]);
@@ -246,7 +248,7 @@ const Reports = () => {
             <p className="text-sm text-muted-foreground">Total Sales</p>
             <TrendingUp className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">₹{totalSales.toLocaleString("en-IN")}</p>
+          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{formatCurrency(totalSales)}</p>
           <p className="text-xs text-muted-foreground mt-1">{filteredSales.length} transactions</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
@@ -254,7 +256,7 @@ const Reports = () => {
             <p className="text-sm text-muted-foreground">Total Purchases</p>
             <TrendingDown className="w-4 h-4 text-orange-500" />
           </div>
-          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">₹{totalPurchases.toLocaleString("en-IN")}</p>
+          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPurchases)}</p>
           <p className="text-xs text-muted-foreground mt-1">{filteredPurchases.length} orders</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
@@ -263,7 +265,7 @@ const Reports = () => {
             <Package className="w-4 h-4 text-primary" />
           </div>
           <p className={`text-xl sm:text-2xl font-bold mt-1 ${profit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}`}>
-            {profit >= 0 ? "+" : ""}₹{profit.toLocaleString("en-IN")}
+            {profit >= 0 ? "+" : ""}{formatCurrency(Math.abs(profit))}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             {totalSales > 0 ? `${((profit / totalSales) * 100).toFixed(1)}% margin` : "No data"}
@@ -307,8 +309,8 @@ const Reports = () => {
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={v => v >= 1000 ? `₹${(v / 1000).toFixed(0)}k` : `₹${v}`}
-                  width={55}
+                  tickFormatter={v => v >= 1000 ? `${currencySymbol}${(v / 1000).toFixed(0)}k` : `${currencySymbol}${v}`}
+                  width={60}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend

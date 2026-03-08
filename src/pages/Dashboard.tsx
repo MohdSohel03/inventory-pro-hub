@@ -10,6 +10,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
+import { useAppSettings } from "@/contexts/AppSettingsContext";
 import { Link } from "react-router-dom";
 
 const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3))", "hsl(var(--chart-4))", "hsl(var(--chart-5))"];
@@ -17,6 +18,7 @@ const COLORS = ["hsl(var(--chart-1))", "hsl(var(--chart-2))", "hsl(var(--chart-3
 const Dashboard = () => {
   const { user } = useAuth();
   const { isAdmin } = useRole();
+  const { formatCurrency, currencySymbol, formatDate } = useAppSettings();
   const [products, setProducts] = useState<any[]>([]);
   const [sales, setSales] = useState<any[]>([]);
   const [purchases, setPurchases] = useState<any[]>([]);
@@ -109,8 +111,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6">
         <StatCard title="Total Products" value={products.length} subtitle="In catalog" icon={<Package className="w-4 h-4 sm:w-5 sm:h-5" />} />
         <StatCard title="Low Stock" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-warning" />
-        <StatCard title="Inventory Value" value={`₹${totalValue.toLocaleString("en-IN")}`} icon={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />} />
-        <StatCard title="Total Sales" value={sales.length} subtitle={`₹${totalSalesAmount.toLocaleString("en-IN")}`} icon={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />} />
+        <StatCard title="Inventory Value" value={formatCurrency(totalValue)} icon={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />} />
+        <StatCard title="Total Sales" value={sales.length} subtitle={formatCurrency(totalSalesAmount)} icon={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />} />
         <StatCard title="Profit Margin" value={`${profitMargin}%`} subtitle="Overall" icon={<TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-success" />
       </div>
 
@@ -122,7 +124,7 @@ const Dashboard = () => {
               <LineChart data={salesTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={10} tick={{ fontSize: 10 }} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickFormatter={(v) => `₹${v / 1000}k`} width={50} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickFormatter={(v) => `${currencySymbol}${v / 1000}k`} width={50} />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
                 <Line type="monotone" dataKey="sales" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="purchases" stroke="hsl(var(--chart-2))" strokeWidth={2} dot={false} />
@@ -239,10 +241,10 @@ const Dashboard = () => {
               )}
               {sales.slice(0, 5).map((sale) => (
                 <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{sale.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(sale.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{sale.customer}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{sale.items}</td>
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-mono text-xs sm:text-sm">₹{Number(sale.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-mono text-xs sm:text-sm">{formatCurrency(Number(sale.total))}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center text-xs sm:text-sm">{sale.payment}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">
                     <span className={sale.status === "Completed" ? "status-in-stock" : "status-low-stock"}>
