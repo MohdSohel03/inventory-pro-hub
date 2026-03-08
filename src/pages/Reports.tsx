@@ -343,7 +343,7 @@ const Reports = () => {
         </div>
 
         {/* Product Stock Levels */}
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "400ms" }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground text-sm sm:text-base">Product Stock Levels</h3>
             <span className="text-xs text-muted-foreground">{products.length} products</span>
