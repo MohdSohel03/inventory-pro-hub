@@ -259,7 +259,7 @@ const Reports = () => {
           <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPurchases)}</p>
           <p className="text-xs text-muted-foreground mt-1">{filteredPurchases.length} orders</p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in-scale" style={{ animationDelay: "300ms" }}>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Net Profit</p>
             <Package className="w-4 h-4 text-primary" />
