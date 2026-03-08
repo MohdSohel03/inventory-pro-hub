@@ -19,14 +19,14 @@ const PERIOD_LABELS: Record<string, string> = {
   monthly: "Monthly",
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, currencySymbol = "₹", locale = "en-IN" }: any) => {
   if (!active || !payload?.length) return null;
   return (
     <div className="bg-popover border border-border rounded-lg px-3 py-2 shadow-lg text-sm">
       <p className="text-muted-foreground text-xs mb-1">{label}</p>
       {payload.map((entry: any, i: number) => (
         <p key={i} className="font-semibold" style={{ color: entry.color }}>
-          {entry.name}: ₹{Number(entry.value).toLocaleString("en-IN")}
+          {entry.name}: {currencySymbol}{Number(entry.value).toLocaleString(locale)}
         </p>
       ))}
     </div>
