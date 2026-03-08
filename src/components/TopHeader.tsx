@@ -84,20 +84,55 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
           <PopoverTrigger asChild>
             <button className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full" />
+              {alertCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full px-1">
+                  {alertCount}
+                </span>
+              )}
             </button>
           </PopoverTrigger>
           <PopoverContent align="end" className="w-80 p-0">
-            <div className="px-4 py-3 border-b border-border">
-              <h4 className="font-semibold text-foreground text-sm">Notifications</h4>
+            <div className="px-4 py-3 border-b border-border flex items-center justify-between">
+              <h4 className="font-semibold text-foreground text-sm">Stock Alerts</h4>
+              {alertCount > 0 && (
+                <button
+                  onClick={() => navigate("/stock-alerts")}
+                  className="text-xs text-primary hover:underline"
+                >
+                  View all
+                </button>
+              )}
             </div>
-            <div className="max-h-64 overflow-y-auto">
-              {notifications.map(n => (
-                <div key={n.id} className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <p className="text-sm text-foreground">{n.text}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{n.time}</p>
+            <div className="max-h-72 overflow-y-auto">
+              {lowStockProducts.length === 0 ? (
+                <div className="px-4 py-8 text-center">
+                  <PackageCheck className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">All products are well stocked!</p>
                 </div>
-              ))}
+              ) : (
+                lowStockProducts.map(p => (
+                  <div
+                    key={p.id}
+                    className="px-4 py-3 border-b border-border/50 hover:bg-muted/30 transition-colors cursor-pointer"
+                    onClick={() => navigate("/stock-alerts")}
+                  >
+                    <div className="flex items-start gap-2.5">
+                      <AlertTriangle className={`w-4 h-4 mt-0.5 shrink-0 ${p.stock === 0 ? "text-destructive" : "text-orange-500"}`} />
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">
+                          {p.stock === 0 ? "Out of stock" : `${p.stock} left`} · Min: {p.min_stock}
+                        </p>
+                      </div>
+                      <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded shrink-0 ${
+                        p.stock === 0 ? "bg-destructive/10 text-destructive" : "bg-orange-500/10 text-orange-600 dark:text-orange-400"
+                      }`}>
+                        {p.stock === 0 ? "OUT" : "LOW"}
+                      </span>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </PopoverContent>
         </Popover>
