@@ -317,6 +317,12 @@ const Sales = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <BarcodeScanner
+        open={showSaleScanner}
+        onClose={() => setShowSaleScanner(false)}
+        onScan={handleSaleScan}
+      />
     </div>
   );
 };
