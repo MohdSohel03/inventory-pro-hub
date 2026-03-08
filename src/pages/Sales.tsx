@@ -101,9 +101,27 @@ const Sales = () => {
     fetchData();
   };
 
+  const handleExport = () => {
+    if (filtered.length === 0) {
+      toast({ title: "No data", description: "No sales to export", variant: "destructive" });
+      return;
+    }
+    exportToCSV(filtered, `sales-${new Date().toISOString().slice(0, 10)}`, [
+      { key: "date", label: "Date" },
+      { key: "customer", label: "Customer" },
+      { key: "items", label: "Items" },
+      { key: "discount", label: "Discount (%)" },
+      { key: "total", label: "Total (₹)" },
+      { key: "payment", label: "Payment" },
+      { key: "status", label: "Status" },
+    ]);
+    toast({ title: "Exported!", description: `${filtered.length} sales exported to CSV` });
+  };
+
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-end mb-4">
+      <div className="flex items-center justify-end gap-2 mb-4">
+        <Button onClick={handleExport} variant="outline" size="sm" className="sm:size-default"><Download className="w-4 h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Export</span> CSV</Button>
         <Button onClick={() => setShowAdd(true)} size="sm" className="sm:size-default"><Plus className="w-4 h-4 mr-1 sm:mr-2" /><span>Create Sale</span></Button>
       </div>
 

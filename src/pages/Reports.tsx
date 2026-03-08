@@ -211,7 +211,12 @@ const Reports = () => {
       </div>
 
       <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
-        <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Low Stock Products</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-foreground text-sm sm:text-base">Low Stock Products</h3>
+          {lowStockProducts.length > 0 && (
+            <Button onClick={handleExportLowStock} variant="ghost" size="sm" className="text-xs h-7"><Download className="w-3 h-3 mr-1" />Export</Button>
+          )}
+        </div>
         <div className="overflow-x-auto -mx-4 sm:mx-0">
           <table className="w-full text-sm min-w-[500px]">
             <thead>
