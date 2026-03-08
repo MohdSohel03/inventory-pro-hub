@@ -103,6 +103,39 @@ const Reports = () => {
     }
   }, [period]);
 
+  const handleExportSales = () => {
+    if (filteredSales.length === 0) {
+      toast({ title: "No data", description: "No sales in this period to export", variant: "destructive" });
+      return;
+    }
+    exportToCSV(filteredSales, `sales-report-${startDate}-to-${endDate}`, [
+      { key: "date", label: "Date" },
+      { key: "customer", label: "Customer" },
+      { key: "items", label: "Items" },
+      { key: "discount", label: "Discount (%)" },
+      { key: "total", label: "Total (₹)" },
+      { key: "payment", label: "Payment" },
+      { key: "status", label: "Status" },
+    ]);
+    toast({ title: "Exported!", description: `${filteredSales.length} sales exported to CSV` });
+  };
+
+  const handleExportLowStock = () => {
+    if (lowStockProducts.length === 0) {
+      toast({ title: "No data", description: "No low stock products to export", variant: "destructive" });
+      return;
+    }
+    exportToCSV(lowStockProducts, `low-stock-${new Date().toISOString().slice(0, 10)}`, [
+      { key: "name", label: "Product" },
+      { key: "sku", label: "SKU" },
+      { key: "stock", label: "Current Stock" },
+      { key: "min_stock", label: "Min Stock" },
+      { key: "category", label: "Category" },
+      { key: "location", label: "Location" },
+    ]);
+    toast({ title: "Exported!", description: `${lowStockProducts.length} products exported to CSV` });
+  };
+
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
@@ -120,6 +153,9 @@ const Reports = () => {
             <Label className="text-sm shrink-0">To</Label>
             <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full sm:w-40" />
           </div>
+        </div>
+        <div className="sm:ml-auto">
+          <Button onClick={handleExportSales} variant="outline" size="sm"><Download className="w-4 h-4 mr-1.5" />Export Sales CSV</Button>
         </div>
       </div>
 
