@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { Plus, Search, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, ScanLine, ImageIcon } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,8 +11,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import { useAppSettings } from "@/contexts/AppSettingsContext";
+import { BarcodeScanner } from "@/components/products/BarcodeScanner";
+import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 
-const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "" };
+const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "", image_url: null as string | null };
 
 const Products = () => {
   const { user } = useAuth();
@@ -29,6 +31,7 @@ const Products = () => {
   const [form, setForm] = useState(emptyProduct);
   const [page, setPage] = useState(1);
   const [saving, setSaving] = useState(false);
+  const [showScanner, setShowScanner] = useState(false);
   const perPage = 5;
 
   const fetchProducts = async () => {
@@ -55,11 +58,12 @@ const Products = () => {
   const handleSave = async () => {
     if (!user) return;
     setSaving(true);
+    const payload = { ...form };
     if (editProduct) {
-      const { error } = await supabase.from("products").update({ ...form, updated_at: new Date().toISOString() }).eq("id", editProduct.id);
+      const { error } = await supabase.from("products").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", editProduct.id);
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
-      const { error } = await supabase.from("products").insert({ ...form, user_id: user.id });
+      const { error } = await supabase.from("products").insert({ ...payload, user_id: user.id });
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     }
     setSaving(false);
@@ -77,16 +81,34 @@ const Products = () => {
   };
 
   const openEdit = (p: any) => {
-    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "" });
+    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "", image_url: p.image_url || null });
     setEditProduct(p);
     setShowAdd(true);
   };
 
+  const handleScanResult = (code: string) => {
+    setSearch(code);
+    setPage(1);
+    const found = products.find(p => p.sku.toLowerCase() === code.toLowerCase());
+    if (found) {
+      toast({ title: "Product Found", description: `Found: ${found.name} (${found.sku})` });
+    } else {
+      toast({ title: "No Match", description: `No product found for barcode: ${code}. You can add it as a new product.`, variant: "destructive" });
+    }
+  };
+
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-end mb-4">
+      <div className="flex items-center justify-end gap-2 mb-4">
         {isAdmin && (
-          <Button size="sm" className="sm:size-default" onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Product</Button>
+          <>
+            <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
+              <ScanLine className="w-4 h-4 mr-1 sm:mr-2" />Scan Product
+            </Button>
+            <Button size="sm" onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}>
+              <Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Product
+            </Button>
+          </>
         )}
       </div>
 
@@ -120,19 +142,28 @@ const Products = () => {
           <table className="w-full text-sm min-w-[700px]">
             <thead>
               <tr className="border-b border-border">
-                {["Product", "SKU", "Category", "Qty", "Cost", "Price", "Min", "Status", "Location", ...(isAdmin ? ["Actions"] : [])].map(h => (
-                  <th key={h} className="text-left py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
+                {["", "Product", "SKU", "Category", "Qty", "Cost", "Price", "Min", "Status", "Location", ...(isAdmin ? ["Actions"] : [])].map(h => (
+                  <th key={h || "img"} className="text-left py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {paginated.length === 0 && (
-                <tr><td colSpan={10} className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</td></tr>
+                <tr><td colSpan={11} className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</td></tr>
               )}
               {paginated.map(p => {
                 const status = getStatus(p);
                 return (
                   <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                    <td className="py-2 sm:py-3 px-3 sm:px-4">
+                      <div className="w-10 h-10 rounded-lg bg-muted border border-border overflow-hidden flex items-center justify-center">
+                        {p.image_url ? (
+                          <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                        )}
+                      </div>
+                    </td>
                     <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground">{p.name}</td>
                     <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-muted-foreground text-xs">{p.sku}</td>
                     <td className="py-2 sm:py-3 px-3 sm:px-4">{p.category}</td>
@@ -172,12 +203,14 @@ const Products = () => {
         )}
       </div>
 
+      {/* Add/Edit Product Dialog */}
       <Dialog open={showAdd} onOpenChange={v => { if (!v) { setShowAdd(false); setEditProduct(null); } }}>
         <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editProduct ? "Edit Product" : "Add Product"}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
+            <ProductImageUpload imageUrl={form.image_url} onImageChange={(url) => setForm({ ...form, image_url: url })} />
             <div className="sm:col-span-2"><Label>Product Name</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
             <div><Label>SKU</Label><Input value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} /></div>
             <div><Label>Category</Label><Input value={form.category} onChange={e => setForm({...form, category: e.target.value})} /></div>
@@ -194,6 +227,7 @@ const Products = () => {
         </DialogContent>
       </Dialog>
 
+      {/* Delete Confirmation */}
       <AlertDialog open={deleteId !== null} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -206,6 +240,15 @@ const Products = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Barcode Scanner - Admin only */}
+      {isAdmin && (
+        <BarcodeScanner
+          open={showScanner}
+          onClose={() => setShowScanner(false)}
+          onScan={handleScanResult}
+        />
+      )}
     </div>
   );
 };
