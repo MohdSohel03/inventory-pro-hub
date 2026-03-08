@@ -280,8 +280,8 @@ const Sales = () => {
                           </Select>
                         </div>
                         <div className="flex gap-2 items-end">
-                          <Input type="number" className="w-20" placeholder="Qty" min={1} value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
-                          <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, "price", +e.target.value)} />
+                          <Input type="number" className="w-20" placeholder="Qty" min={1} value={item.quantity} onChange={e => updateItem(i, { quantity: +e.target.value })} />
+                          <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, { price: +e.target.value })} />
                           {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
                         </div>
                       </div>
