@@ -159,6 +159,30 @@ const Sales = () => {
     toast({ title: "Exported!", description: `${filtered.length} sales exported to CSV` });
   };
 
+  const handleExportPDF = () => {
+    if (filtered.length === 0) {
+      toast({ title: "No data", description: "No sales to export", variant: "destructive" });
+      return;
+    }
+    const totalFiltered = filtered.reduce((s, sale) => s + Number(sale.total), 0);
+    exportToPDF({
+      title: "Sales Report",
+      subtitle: `${filtered.length} sales • Total: ${formatCurrency(totalFiltered)}`,
+      columns: [
+        { key: "date", label: "Date" },
+        { key: "customer", label: "Customer" },
+        { key: "items", label: "Items" },
+        { key: "discount", label: "Discount (%)" },
+        { key: "total", label: "Total" },
+        { key: "payment", label: "Payment" },
+        { key: "status", label: "Status" },
+      ],
+      data: filtered,
+      fileName: `sales-${new Date().toISOString().slice(0, 10)}`,
+    });
+    toast({ title: "PDF Downloaded!", description: `${filtered.length} sales exported as PDF` });
+  };
+
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end gap-2 mb-4 opacity-0 animate-fade-in">
