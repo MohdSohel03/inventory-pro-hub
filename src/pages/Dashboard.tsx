@@ -117,7 +117,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "300ms" }}>
           <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Sales & Purchases Trend</h3>
           {salesTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
