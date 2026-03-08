@@ -181,7 +181,7 @@ const Reports = () => {
       { key: "customer", label: "Customer" },
       { key: "items", label: "Items" },
       { key: "discount", label: "Discount (%)" },
-      { key: "total", label: "Total (₹)" },
+      { key: "total", label: "Total" },
       { key: "payment", label: "Payment" },
       { key: "status", label: "Status" },
     ]);
