@@ -24,18 +24,47 @@ const Dashboard = () => {
   const [purchases, setPurchases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const fetchData = async () => {
     if (!user) return;
-    Promise.all([
+    const [p, s, pu] = await Promise.all([
       supabase.from("products").select("*"),
       supabase.from("sales").select("*").order("date", { ascending: false }),
       supabase.from("purchases").select("*").order("date", { ascending: false }),
-    ]).then(([p, s, pu]) => {
-      if (p.data) setProducts(p.data);
-      if (s.data) setSales(s.data);
-      if (pu.data) setPurchases(pu.data);
-      setLoading(false);
-    });
+    ]);
+    if (p.data) setProducts(p.data);
+    if (s.data) setSales(s.data);
+    if (pu.data) setPurchases(pu.data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, [user]);
+
+  // Realtime subscriptions for live updates
+  useEffect(() => {
+    if (!user) return;
+
+    const salesChannel = supabase
+      .channel("dashboard-sales")
+      .on("postgres_changes", { event: "*", schema: "public", table: "sales" }, () => fetchData())
+      .subscribe();
+
+    const purchasesChannel = supabase
+      .channel("dashboard-purchases")
+      .on("postgres_changes", { event: "*", schema: "public", table: "purchases" }, () => fetchData())
+      .subscribe();
+
+    const productsChannel = supabase
+      .channel("dashboard-products")
+      .on("postgres_changes", { event: "*", schema: "public", table: "products" }, () => fetchData())
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(salesChannel);
+      supabase.removeChannel(purchasesChannel);
+      supabase.removeChannel(productsChannel);
+    };
   }, [user]);
 
   const lowStockCount = products.filter(p => p.stock <= p.min_stock).length;
