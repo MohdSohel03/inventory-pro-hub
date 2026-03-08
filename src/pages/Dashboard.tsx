@@ -239,8 +239,8 @@ const Dashboard = () => {
                   </td>
                 </tr>
               )}
-              <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${600 + i * 50}ms` }}>
-                <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+              {sales.slice(0, 5).map((sale, i) => (
+                <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${600 + i * 50}ms` }}>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(sale.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{sale.customer}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{sale.items}</td>
