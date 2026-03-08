@@ -265,7 +265,7 @@ const Reports = () => {
             <Package className="w-4 h-4 text-primary" />
           </div>
           <p className={`text-xl sm:text-2xl font-bold mt-1 ${profit >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-destructive"}`}>
-            {profit >= 0 ? "+" : ""}₹{profit.toLocaleString("en-IN")}
+            {profit >= 0 ? "+" : ""}{formatCurrency(Math.abs(profit))}
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             {totalSales > 0 ? `${((profit / totalSales) * 100).toFixed(1)}% margin` : "No data"}
