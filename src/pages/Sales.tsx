@@ -22,6 +22,8 @@ const Sales = () => {
   const [sales, setSales] = useState<any[]>([]);
   const [products, setProducts] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
   const [showAdd, setShowAdd] = useState(false);
   const [customer, setCustomer] = useState("");
   const [payment, setPayment] = useState("Cash");
