@@ -353,7 +353,7 @@ const Products = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Barcode Scanner - Admin only */}
+      {/* Barcode Scanner - Search */}
       {isAdmin && (
         <BarcodeScanner
           open={showScanner}
@@ -361,6 +361,13 @@ const Products = () => {
           onScan={handleScanResult}
         />
       )}
+
+      {/* Barcode Scanner - Form */}
+      <BarcodeScanner
+        open={showFormScanner}
+        onClose={() => setShowFormScanner(false)}
+        onScan={handleBarcodeScanInForm}
+      />
     </div>
   );
 };
