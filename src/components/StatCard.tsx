@@ -7,11 +7,15 @@ interface StatCardProps {
   trend?: string;
   icon: ReactNode;
   iconColor?: string;
+  delay?: number;
 }
 
-export function StatCard({ title, value, subtitle, trend, icon, iconColor = "text-primary" }: StatCardProps) {
+export function StatCard({ title, value, subtitle, trend, icon, iconColor = "text-primary", delay = 0 }: StatCardProps) {
   return (
-    <div className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-colors">
+    <div
+      className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 opacity-0 animate-fade-in-scale hover:-translate-y-0.5"
+      style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
+    >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <p className="text-xs sm:text-sm text-muted-foreground font-medium truncate">{title}</p>
