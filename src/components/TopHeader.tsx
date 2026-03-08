@@ -45,6 +45,19 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
     enabled: !!user,
   });
 
+  const { data: lowStockProducts = [] } = useQuery({
+    queryKey: ["low-stock-alerts", user?.id],
+    queryFn: async () => {
+      const { data } = await supabase.from("products").select("id, name, stock, min_stock, sku");
+      if (!data) return [];
+      return data.filter(p => p.stock <= p.min_stock);
+    },
+    enabled: !!user,
+    refetchInterval: 60000, // refresh every minute
+  });
+
+  const alertCount = lowStockProducts.length;
+
   const initials = profile?.full_name
     ? profile.full_name.split(" ").map((n: string) => n[0]).join("").toUpperCase().slice(0, 2)
     : user?.email?.slice(0, 2).toUpperCase() || "SP";
