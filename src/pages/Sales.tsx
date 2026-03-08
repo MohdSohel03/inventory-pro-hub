@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search, Trash2, ShoppingCart } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,7 +19,7 @@ const Sales = () => {
   const [search, setSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [customer, setCustomer] = useState("");
-  const [payment, setPayment] = useState("Credit Card");
+  const [payment, setPayment] = useState("Cash");
   const [discount, setDiscount] = useState(0);
   const [items, setItems] = useState([{ product: "", quantity: 1, price: 0 }]);
   const [saving, setSaving] = useState(false);
@@ -36,7 +36,11 @@ const Sales = () => {
 
   useEffect(() => { fetchData(); }, [user]);
 
-  const filtered = sales.filter(s => s.customer.toLowerCase().includes(search.toLowerCase()));
+  const filtered = sales.filter(s =>
+    s.customer.toLowerCase().includes(search.toLowerCase()) ||
+    s.date?.includes(search) ||
+    s.payment?.toLowerCase().includes(search.toLowerCase())
+  );
   const subtotal = items.reduce((s, i) => s + i.quantity * i.price, 0);
   const total = subtotal * (1 - discount / 100);
 
@@ -46,28 +50,54 @@ const Sales = () => {
 
   const handleSave = async () => {
     if (!user) return;
+
+    // Validation
+    if (!customer.trim()) {
+      toast({ title: "Missing customer", description: "Please enter a customer name", variant: "destructive" });
+      return;
+    }
+    const validItems = items.filter(i => i.product && i.quantity > 0 && i.price > 0);
+    if (validItems.length === 0) {
+      toast({ title: "No products", description: "Add at least one product with quantity and price", variant: "destructive" });
+      return;
+    }
+
     setSaving(true);
     const effectiveUserId = isStaff && adminId ? adminId : user.id;
     const { error } = await supabase.from("sales").insert({
       user_id: effectiveUserId,
       date: new Date().toISOString().split("T")[0],
-      customer,
-      items: items.length,
+      customer: customer.trim(),
+      items: validItems.length,
       total: +total.toFixed(2),
       discount,
       payment,
       status: "Completed",
     });
-    setSaving(false);
+
     if (error) {
+      setSaving(false);
       toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      setShowAdd(false);
-      setCustomer("");
-      setDiscount(0);
-      setItems([{ product: "", quantity: 1, price: 0 }]);
-      fetchData();
+      return;
     }
+
+    // Deduct stock for each sold product
+    for (const item of validItems) {
+      const product = products.find(p => p.name === item.product);
+      if (product) {
+        const newStock = Math.max(0, product.stock - item.quantity);
+        await supabase.from("products").update({ stock: newStock, updated_at: new Date().toISOString() }).eq("id", product.id);
+      }
+    }
+
+    setSaving(false);
+    toast({ title: "Sale created!", description: `₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2 })} sale to ${customer.trim()}` });
+    setShowAdd(false);
+    setCustomer("");
+    setDiscount(0);
+    setPayment("Cash");
+    setItems([{ product: "", quantity: 1, price: 0 }]);
+    fetchData();
   };
 
   return (
@@ -78,7 +108,7 @@ const Sales = () => {
 
       <div className="relative max-w-md mb-4">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Search sales..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
+        <Input placeholder="Search by customer, date, payment..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">
@@ -93,7 +123,12 @@ const Sales = () => {
             </thead>
             <tbody>
               {filtered.length === 0 && (
-                <tr><td colSpan={7} className="py-8 text-center text-muted-foreground">No sales yet.</td></tr>
+                <tr>
+                  <td colSpan={7} className="py-12 text-center">
+                    <ShoppingCart className="w-8 h-8 text-muted-foreground/50 mx-auto mb-2" />
+                    <p className="text-muted-foreground text-sm">{search ? "No sales match your search" : "No sales yet. Create your first sale!"}</p>
+                  </td>
+                </tr>
               )}
               {filtered.map(s => (
                 <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
@@ -116,43 +151,70 @@ const Sales = () => {
           <DialogHeader><DialogTitle>Create Sale</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div><Label>Customer</Label><Input value={customer} onChange={e => setCustomer(e.target.value)} /></div>
+              <div>
+                <Label>Customer <span className="text-destructive">*</span></Label>
+                <Input value={customer} onChange={e => setCustomer(e.target.value)} placeholder="Customer name" />
+              </div>
               <div>
                 <Label>Payment Method</Label>
                 <Select value={payment} onValueChange={setPayment}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="Cash">Cash</SelectItem>
                     <SelectItem value="Credit Card">Credit Card</SelectItem>
                     <SelectItem value="Bank Transfer">Bank Transfer</SelectItem>
-                    <SelectItem value="Cash">Cash</SelectItem>
+                    <SelectItem value="UPI">UPI</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
             </div>
             <div>
-              <div className="flex items-center justify-between mb-2"><Label>Products</Label><Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
+              <div className="flex items-center justify-between mb-2">
+                <Label>Products <span className="text-destructive">*</span></Label>
+                <Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button>
+              </div>
               <div className="space-y-2">
-                {items.map((item, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end">
-                    <div className="flex-1">
-                      <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "price", Number(p.selling_price)); }}>
-                        <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
-                        <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
-                      </Select>
+                {items.map((item, i) => {
+                  const selectedProduct = products.find(p => p.name === item.product);
+                  return (
+                    <div key={i}>
+                      <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
+                        <div className="flex-1">
+                          <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "price", Number(p.selling_price)); }}>
+                            <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
+                            <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name} (Stock: {p.stock})</SelectItem>)}</SelectContent>
+                          </Select>
+                        </div>
+                        <div className="flex gap-2 items-end">
+                          <Input type="number" className="w-20" placeholder="Qty" min={1} value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
+                          <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, "price", +e.target.value)} />
+                          {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
+                        </div>
+                      </div>
+                      {selectedProduct && item.quantity > selectedProduct.stock && (
+                        <p className="text-xs text-destructive mt-1">⚠ Only {selectedProduct.stock} in stock</p>
+                      )}
                     </div>
-                    <div className="flex gap-2 items-end">
-                      <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
-                      <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, "price", +e.target.value)} />
-                      {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
-            <div><Label>Discount (%)</Label><Input type="number" value={discount} onChange={e => setDiscount(+e.target.value)} className="w-28" /></div>
-            <div className="flex flex-col sm:flex-row justify-between text-foreground gap-1">
-              <span className="text-sm">Subtotal: ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
-              <span className="text-lg font-bold">Total: ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+            <div><Label>Discount (%)</Label><Input type="number" value={discount} onChange={e => setDiscount(+e.target.value)} className="w-28" min={0} max={100} /></div>
+            <div className="bg-muted/30 rounded-lg p-3 border border-border">
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Subtotal</span>
+                <span>₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-sm text-muted-foreground mt-1">
+                  <span>Discount ({discount}%)</span>
+                  <span>-₹{(subtotal * discount / 100).toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+                </div>
+              )}
+              <div className="flex justify-between text-base font-bold text-foreground mt-2 pt-2 border-t border-border">
+                <span>Total</span>
+                <span>₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+              </div>
             </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
