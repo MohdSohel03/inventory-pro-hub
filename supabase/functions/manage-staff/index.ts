@@ -25,10 +25,12 @@ Deno.serve(async (req) => {
     const userClient = createClient(supabaseUrl, anonKey, {
       global: { headers: { Authorization: authHeader } },
     });
-    const { data: { user: callingUser } } = await userClient.auth.getUser();
-    if (!callingUser) {
+    const token = authHeader.replace("Bearer ", "");
+    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims?.sub) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: corsHeaders });
     }
+    const callingUser = { id: claimsData.claims.sub as string };
 
     // Check admin role
     const { data: roleData } = await supabaseAdmin
