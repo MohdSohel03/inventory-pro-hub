@@ -248,7 +248,7 @@ const Reports = () => {
             <p className="text-sm text-muted-foreground">Total Sales</p>
             <TrendingUp className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">₹{totalSales.toLocaleString("en-IN")}</p>
+          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{formatCurrency(totalSales)}</p>
           <p className="text-xs text-muted-foreground mt-1">{filteredSales.length} transactions</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
