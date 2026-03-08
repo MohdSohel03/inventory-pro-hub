@@ -353,7 +353,27 @@ const Products = () => {
             <div><Label>Min Stock Alert</Label><Input type="number" value={form.min_stock} onChange={e => setForm({...form, min_stock: +e.target.value})} /></div>
             <div><Label>Cost Price</Label><Input type="number" value={form.cost_price} onChange={e => setForm({...form, cost_price: +e.target.value})} /></div>
             <div><Label>Selling Price</Label><Input type="number" value={form.selling_price} onChange={e => setForm({...form, selling_price: +e.target.value})} /></div>
-            <div className="sm:col-span-2"><Label>Location</Label><Input value={form.location} onChange={e => setForm({...form, location: e.target.value})} /></div>
+            <div className="sm:col-span-2">
+              <Label>Location</Label>
+              {customLocation ? (
+                <div className="flex gap-2">
+                  <Input value={form.location} onChange={e => setForm({...form, location: e.target.value})} placeholder="Enter new location" className="flex-1" />
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomLocation(false); if (locations.length) setForm({...form, location: locations[0]}); }}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Select value={form.location || ""} onValueChange={v => setForm({...form, location: v})}>
+                    <SelectTrigger className="flex-1"><SelectValue placeholder="Select location" /></SelectTrigger>
+                    <SelectContent>
+                      {locations.map(l => <SelectItem key={l} value={l!}>{l}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomLocation(true); setForm({...form, location: ""}); }}>
+                    <Plus className="w-3 h-3 mr-1" />New
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={() => { setShowAdd(false); setEditProduct(null); }} className="w-full sm:w-auto">Cancel</Button>
