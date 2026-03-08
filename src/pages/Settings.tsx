@@ -131,11 +131,6 @@ const Settings = () => {
     }
   }, [themeMode]);
 
-  // Handlers
-  const saveSetting = (key: string, value: string, label: string, detail: string) => {
-    localStorage.setItem(key, value);
-    toast({ title: `${label} updated`, description: detail });
-  };
 
   const handleSavePreferences = () => {
     localStorage.setItem("default_min_stock", defaultMinStock);
