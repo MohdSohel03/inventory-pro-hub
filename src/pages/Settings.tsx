@@ -109,20 +109,28 @@ const Settings = () => {
 
   // Theme effect
   useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.remove("light");
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
-    }
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  }, [isDark]);
+    const applyTheme = (mode: "dark" | "light" | "system") => {
+      let isDark: boolean;
+      if (mode === "system") {
+        isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      } else {
+        isDark = mode === "dark";
+      }
+      document.documentElement.classList.toggle("dark", isDark);
+      document.documentElement.classList.toggle("light", !isDark);
+      localStorage.setItem("theme", isDark ? "dark" : "light");
+      localStorage.setItem("theme_mode", mode);
+    };
 
-  useEffect(() => {
-    const saved = localStorage.getItem("theme");
-    if (saved === "light") setIsDark(false);
-  }, []);
+    applyTheme(themeMode);
+
+    if (themeMode === "system") {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      const handler = () => applyTheme("system");
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    }
+  }, [themeMode]);
 
   // Handlers
   const saveSetting = (key: string, value: string, label: string, detail: string) => {
