@@ -86,16 +86,27 @@ const Dashboard = () => {
     { name: "Out of Stock", value: outOfStock, fill: "hsl(var(--chart-5))" },
   ].filter(s => s.value > 0);
 
-  const salesByMonth: Record<string, { sales: number; purchases: number }> = {};
+  // Daily sales & purchases trend (last 7 days)
+  const salesByDay: Record<string, { sales: number; purchases: number }> = {};
+  const today = new Date();
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(today);
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().slice(0, 10);
+    salesByDay[key] = { sales: 0, purchases: 0 };
+  }
   sales.forEach(s => {
-    const m = s.date?.slice(0, 7);
-    if (m) { salesByMonth[m] = salesByMonth[m] || { sales: 0, purchases: 0 }; salesByMonth[m].sales += Number(s.total); }
+    const d = s.date?.slice(0, 10);
+    if (d && salesByDay[d] !== undefined) salesByDay[d].sales += Number(s.total);
   });
   purchases.forEach(p => {
-    const m = p.date?.slice(0, 7);
-    if (m) { salesByMonth[m] = salesByMonth[m] || { sales: 0, purchases: 0 }; salesByMonth[m].purchases += Number(p.total); }
+    const d = p.date?.slice(0, 10);
+    if (d && salesByDay[d] !== undefined) salesByDay[d].purchases += Number(p.total);
   });
-  const salesTrend = Object.entries(salesByMonth).sort().slice(-6).map(([month, d]) => ({ month, ...d }));
+  const salesTrend = Object.entries(salesByDay).map(([date, d]) => ({
+    day: new Date(date).toLocaleDateString("en-IN", { weekday: "short", day: "2-digit" }),
+    ...d,
+  }));
 
   const topProducts = products.slice(0, 5).map(p => ({ name: p.name, stock: p.stock }));
 
@@ -147,12 +158,12 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
         <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "300ms" }}>
-          <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Sales & Purchases Trend</h3>
+          <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Sales & Purchases Trend <span className="text-muted-foreground font-normal text-xs">(Last 7 days)</span></h3>
           {salesTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={salesTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={10} tick={{ fontSize: 10 }} />
+                <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={10} tick={{ fontSize: 10 }} />
                 <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickFormatter={(v) => `${currencySymbol}${v / 1000}k`} width={50} />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
                 <Line type="monotone" dataKey="sales" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} />
