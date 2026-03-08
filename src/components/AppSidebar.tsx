@@ -40,9 +40,7 @@ export function AppSidebar({ collapsed, setCollapsed, mobileOpen, setMobileOpen 
   const sidebarContent = (
     <>
       <div className="h-14 flex items-center gap-2 px-4 border-b border-sidebar-border">
-        <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shrink-0">
-          <Package className="w-4 h-4 text-primary-foreground" />
-        </div>
+        <img src={inventProLogo} alt="InventPro" className="w-8 h-8 rounded-lg shrink-0 object-contain" />
         {!collapsed && <span className="font-bold text-sidebar-primary-foreground text-lg tracking-tight">InventPro</span>}
         <button onClick={() => setMobileOpen(false)} className="lg:hidden ml-auto p-1 text-muted-foreground hover:text-foreground">
           <X className="w-5 h-5" />
