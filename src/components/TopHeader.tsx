@@ -1,4 +1,4 @@
-import { Bell, Menu, User, LogOut, Settings } from "lucide-react";
+import { Bell, Menu, User, LogOut, Settings, AlertTriangle, PackageCheck } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
@@ -10,10 +10,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-
-const notifications = [
-  { id: 1, text: "Check Stock Alerts for low inventory items", time: "Just now" },
-];
 
 const pageTitles: Record<string, { title: string; subtitle?: string }> = {
   "/": { title: "Dashboard", subtitle: "Manage your inventory in real-time" },
