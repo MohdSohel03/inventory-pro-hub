@@ -75,7 +75,7 @@ const Purchases = () => {
 
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-end mb-4">
+      <div className="flex items-center justify-end mb-4 opacity-0 animate-fade-in">
         {isAdmin && <Button size="sm" className="sm:size-default" onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Create Purchase</Button>}
       </div>
 
