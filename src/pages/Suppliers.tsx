@@ -68,7 +68,7 @@ const Suppliers = () => {
         {isAdmin && <Button size="sm" className="sm:size-default" onClick={() => { setForm(emptySupplier); setShowAdd(true); }}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Supplier</Button>}
       </div>
 
-      <div className="relative max-w-md mb-4">
+      <div className="relative max-w-md mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input placeholder="Search suppliers..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
       </div>
