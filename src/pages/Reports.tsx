@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
+import { exportToPDF } from "@/lib/export-pdf";
 import { useAppSettings } from "@/contexts/AppSettingsContext";
 
 const PERIOD_LABELS: Record<string, string> = {
