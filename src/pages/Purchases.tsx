@@ -27,6 +27,8 @@ const Purchases = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [supplier, setSupplier] = useState("");
   const [status, setStatus] = useState("Pending");
+  const [editItemsCount, setEditItemsCount] = useState(0);
+  const [editTotal, setEditTotal] = useState(0);
   const [items, setItems] = useState([{ product: "", quantity: 1, cost: 0 }]);
   const [saving, setSaving] = useState(false);
 
