@@ -64,6 +64,31 @@ const Sales = () => {
   const removeItem = (idx: number) => setItems(items.filter((_, i) => i !== idx));
   const updateItem = (idx: number, field: string, value: any) => setItems(items.map((item, i) => i === idx ? { ...item, [field]: value } : item));
 
+  const handleSaleScan = (code: string) => {
+    const found = products.find(p => p.barcode === code || p.sku.toLowerCase() === code.toLowerCase());
+    if (found) {
+      // Check if already in items list
+      const existingIdx = items.findIndex(i => i.product === found.name);
+      if (existingIdx >= 0) {
+        updateItem(existingIdx, "quantity", items[existingIdx].quantity + 1);
+      } else {
+        // Add to first empty slot or append
+        const emptyIdx = items.findIndex(i => !i.product);
+        if (emptyIdx >= 0) {
+          const updated = [...items];
+          updated[emptyIdx] = { product: found.name, quantity: 1, price: Number(found.selling_price) };
+          setItems(updated);
+        } else {
+          setItems([...items, { product: found.name, quantity: 1, price: Number(found.selling_price) }]);
+        }
+      }
+      toast({ title: "Product added", description: `${found.name} — ${found.sku}` });
+    } else {
+      toast({ title: "Not found", description: `No product with barcode: ${code}`, variant: "destructive" });
+    }
+    setShowSaleScanner(false);
+  };
+
   const handleSave = async () => {
     if (!user) return;
 
