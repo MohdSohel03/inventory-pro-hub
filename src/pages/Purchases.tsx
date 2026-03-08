@@ -101,9 +101,9 @@ const Purchases = () => {
               {filtered.map(p => (
                 <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{p.supplier_name}</td>
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{p.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(p.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{p.items}</td>
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">₹{Number(p.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">{formatCurrency(Number(p.total))}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4"><span className={p.status === "Received" ? "status-in-stock" : "status-low-stock"}>{p.status}</span></td>
                 </tr>
               ))}
