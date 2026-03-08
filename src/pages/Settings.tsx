@@ -23,17 +23,17 @@ const Settings = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-[800px] mx-auto">
-      <div className="bg-card border border-border rounded-xl p-6 space-y-6">
+    <div className="p-3 sm:p-6 max-w-[800px] mx-auto">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-6">
         <div>
-          <h2 className="text-lg font-semibold text-foreground mb-1">Appearance</h2>
-          <p className="text-sm text-muted-foreground">Customize how StockPilot looks</p>
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-1">Appearance</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">Customize how StockPilot looks</p>
         </div>
 
-        <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border">
-          <div className="flex items-center gap-3">
-            {isDark ? <Moon className="w-5 h-5 text-primary" /> : <Sun className="w-5 h-5 text-warning" />}
-            <div>
+        <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            {isDark ? <Moon className="w-5 h-5 text-primary shrink-0" /> : <Sun className="w-5 h-5 text-warning shrink-0" />}
+            <div className="min-w-0">
               <Label className="text-foreground font-medium">Dark Mode</Label>
               <p className="text-xs text-muted-foreground">Toggle between light and dark theme</p>
             </div>
@@ -42,18 +42,18 @@ const Settings = () => {
         </div>
 
         <div>
-          <h2 className="text-lg font-semibold text-foreground mb-1">General</h2>
-          <p className="text-sm text-muted-foreground">App preferences</p>
+          <h2 className="text-base sm:text-lg font-semibold text-foreground mb-1">General</h2>
+          <p className="text-xs sm:text-sm text-muted-foreground">App preferences</p>
         </div>
 
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border">
+          <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border">
             <div>
               <Label className="text-foreground font-medium">Currency</Label>
               <p className="text-xs text-muted-foreground">Indian Rupee (₹)</p>
             </div>
           </div>
-          <div className="flex items-center justify-between p-4 rounded-lg bg-muted/30 border border-border">
+          <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border">
             <div>
               <Label className="text-foreground font-medium">Language</Label>
               <p className="text-xs text-muted-foreground">English</p>

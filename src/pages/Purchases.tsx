@@ -72,9 +72,9 @@ const Purchases = () => {
   };
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
+    <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4">
-        {isAdmin && <Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-2" />Create Purchase</Button>}
+        {isAdmin && <Button size="sm" className="sm:size-default" onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Create Purchase</Button>}
       </div>
 
       <div className="relative max-w-md mb-4">
@@ -83,33 +83,35 @@ const Purchases = () => {
       </div>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border">
-              {["Supplier", "Date", "Items", "Total", "Status"].map(h => (
-                <th key={h} className="text-left py-3 px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 && (
-              <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">No purchases yet.</td></tr>
-            )}
-            {filtered.map(p => (
-              <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                <td className="py-3 px-4 font-medium text-foreground">{p.supplier_name}</td>
-                <td className="py-3 px-4">{p.date}</td>
-                <td className="py-3 px-4 text-center">{p.items}</td>
-                <td className="py-3 px-4 font-mono">₹{Number(p.total).toLocaleString("en-IN")}</td>
-                <td className="py-3 px-4"><span className={p.status === "Received" ? "status-in-stock" : "status-low-stock"}>{p.status}</span></td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[450px]">
+            <thead>
+              <tr className="border-b border-border">
+                {["Supplier", "Date", "Items", "Total", "Status"].map(h => (
+                  <th key={h} className="text-left py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">No purchases yet.</td></tr>
+              )}
+              {filtered.map(p => (
+                <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{p.supplier_name}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{p.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{p.items}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">₹{Number(p.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4"><span className={p.status === "Received" ? "status-in-stock" : "status-low-stock"}>{p.status}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Create Purchase Order</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
             <div>
@@ -125,25 +127,27 @@ const Purchases = () => {
               <div className="flex items-center justify-between mb-2"><Label>Products</Label><Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
               <div className="space-y-2">
                 {items.map((item, i) => (
-                  <div key={i} className="flex gap-2 items-end">
+                  <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end">
                     <div className="flex-1">
                       <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "cost", Number(p.cost_price)); }}>
                         <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
                         <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
-                    <Input type="number" className="w-28" placeholder="Cost" value={item.cost} onChange={e => updateItem(i, "cost", +e.target.value)} />
-                    {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
+                    <div className="flex gap-2 items-end">
+                      <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
+                      <Input type="number" className="w-28" placeholder="Cost" value={item.cost} onChange={e => updateItem(i, "cost", +e.target.value)} />
+                      {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
             <div className="text-right text-lg font-bold text-foreground">Total: ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleSave} disabled={saving}>{saving ? "Creating..." : "Create Purchase"}</Button>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowAdd(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">{saving ? "Creating..." : "Create Purchase"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

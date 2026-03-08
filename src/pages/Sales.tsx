@@ -71,9 +71,9 @@ const Sales = () => {
   };
 
   return (
-    <div className="p-6 max-w-[1400px] mx-auto">
+    <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end mb-4">
-        <Button onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-2" />Create Sale</Button>
+        <Button onClick={() => setShowAdd(true)} size="sm" className="sm:size-default"><Plus className="w-4 h-4 mr-1 sm:mr-2" /><span>Create Sale</span></Button>
       </div>
 
       <div className="relative max-w-md mb-4">
@@ -82,38 +82,40 @@ const Sales = () => {
       </div>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border">
-              {["Date", "Customer", "Items", "Discount", "Total", "Payment", "Status"].map(h => (
-                <th key={h} className="text-left py-3 px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {filtered.length === 0 && (
-              <tr><td colSpan={7} className="py-8 text-center text-muted-foreground">No sales yet.</td></tr>
-            )}
-            {filtered.map(s => (
-              <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                <td className="py-3 px-4">{s.date}</td>
-                <td className="py-3 px-4 font-medium text-foreground">{s.customer}</td>
-                <td className="py-3 px-4 text-center">{s.items}</td>
-                <td className="py-3 px-4">{Number(s.discount)}%</td>
-                <td className="py-3 px-4 font-mono">₹{Number(s.total).toLocaleString("en-IN")}</td>
-                <td className="py-3 px-4">{s.payment}</td>
-                <td className="py-3 px-4"><span className={s.status === "Completed" ? "status-in-stock" : "status-low-stock"}>{s.status}</span></td>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm min-w-[600px]">
+            <thead>
+              <tr className="border-b border-border">
+                {["Date", "Customer", "Items", "Discount", "Total", "Payment", "Status"].map(h => (
+                  <th key={h} className="text-left py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
+                ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.length === 0 && (
+                <tr><td colSpan={7} className="py-8 text-center text-muted-foreground">No sales yet.</td></tr>
+              )}
+              {filtered.map(s => (
+                <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{s.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{s.customer}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{s.items}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4">{Number(s.discount)}%</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">₹{Number(s.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{s.payment}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4"><span className={s.status === "Completed" ? "status-in-stock" : "status-low-stock"}>{s.status}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <Dialog open={showAdd} onOpenChange={setShowAdd}>
-        <DialogContent className="sm:max-w-xl">
+        <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Create Sale</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div><Label>Customer</Label><Input value={customer} onChange={e => setCustomer(e.target.value)} /></div>
               <div>
                 <Label>Payment Method</Label>
@@ -131,29 +133,31 @@ const Sales = () => {
               <div className="flex items-center justify-between mb-2"><Label>Products</Label><Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button></div>
               <div className="space-y-2">
                 {items.map((item, i) => (
-                  <div key={i} className="flex gap-2 items-end">
+                  <div key={i} className="flex flex-col sm:flex-row gap-2 sm:items-end">
                     <div className="flex-1">
                       <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "price", Number(p.selling_price)); }}>
                         <SelectTrigger><SelectValue placeholder="Product" /></SelectTrigger>
                         <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name}</SelectItem>)}</SelectContent>
                       </Select>
                     </div>
-                    <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
-                    <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, "price", +e.target.value)} />
-                    {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
+                    <div className="flex gap-2 items-end">
+                      <Input type="number" className="w-20" placeholder="Qty" value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
+                      <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, "price", +e.target.value)} />
+                      {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
             <div><Label>Discount (%)</Label><Input type="number" value={discount} onChange={e => setDiscount(+e.target.value)} className="w-28" /></div>
-            <div className="flex justify-between text-foreground">
-              <span>Subtotal: ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
+            <div className="flex flex-col sm:flex-row justify-between text-foreground gap-1">
+              <span className="text-sm">Subtotal: ₹{subtotal.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
               <span className="text-lg font-bold">Total: ₹{total.toLocaleString("en-IN", { minimumFractionDigits: 2 })}</span>
             </div>
           </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAdd(false)}>Cancel</Button>
-            <Button onClick={handleSave} disabled={saving}>{saving ? "Creating..." : "Create Sale"}</Button>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setShowAdd(false)} className="w-full sm:w-auto">Cancel</Button>
+            <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto">{saving ? "Creating..." : "Create Sale"}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

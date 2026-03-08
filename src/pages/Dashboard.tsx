@@ -66,101 +66,101 @@ const Dashboard = () => {
   const topProducts = products.slice(0, 5).map(p => ({ name: p.name, stock: p.stock }));
 
   return (
-    <div className="p-4 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
-        <StatCard title="Total Products" value={products.length} subtitle="In catalog" icon={<Package className="w-5 h-5" />} />
-        <StatCard title="Low Stock Alerts" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-5 h-5" />} iconColor="text-warning" />
-        <StatCard title="Total Value" value={`₹${totalValue.toLocaleString("en-IN")}`} icon={<DollarSign className="w-5 h-5" />} />
-        <StatCard title="Total Sales" value={sales.length} subtitle={`₹${totalSalesAmount.toLocaleString("en-IN")}`} icon={<ShoppingCart className="w-5 h-5" />} />
-        <StatCard title="Profit Margin" value={`${profitMargin}%`} subtitle="Avg. across products" icon={<TrendingUp className="w-5 h-5" />} iconColor="text-success" />
+    <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6">
+        <StatCard title="Total Products" value={products.length} subtitle="In catalog" icon={<Package className="w-4 h-4 sm:w-5 sm:h-5" />} />
+        <StatCard title="Low Stock Alerts" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-warning" />
+        <StatCard title="Total Value" value={`₹${totalValue.toLocaleString("en-IN")}`} icon={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />} />
+        <StatCard title="Total Sales" value={sales.length} subtitle={`₹${totalSalesAmount.toLocaleString("en-IN")}`} icon={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />} />
+        <StatCard title="Profit Margin" value={`${profitMargin}%`} subtitle="Avg. across products" icon={<TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-success" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
-          <h3 className="font-semibold text-foreground mb-4">Sales & Purchases Trend</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5">
+          <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Sales & Purchases Trend</h3>
           {salesTrend.length > 0 ? (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={240}>
               <LineChart data={salesTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} tickFormatter={(v) => `₹${v / 1000}k`} />
+                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={10} tick={{ fontSize: 10 }} />
+                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickFormatter={(v) => `₹${v / 1000}k`} width={50} />
                 <Tooltip />
                 <Line type="monotone" dataKey="sales" stroke="hsl(210 100% 50%)" strokeWidth={2} dot={false} />
                 <Line type="monotone" dataKey="purchases" stroke="hsl(142 71% 45%)" strokeWidth={2} dot={false} />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
               </LineChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex items-center justify-center text-muted-foreground">Add sales and purchases to see trends</div>
+            <div className="h-[240px] flex items-center justify-center text-muted-foreground text-sm">Add sales and purchases to see trends</div>
           )}
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="font-semibold text-foreground mb-4">Category Distribution</h3>
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+          <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Category Distribution</h3>
           {categoryDistribution.length > 0 ? (
-            <ResponsiveContainer width="100%" height={280}>
+            <ResponsiveContainer width="100%" height={240}>
               <PieChart>
-                <Pie data={categoryDistribution} cx="50%" cy="50%" innerRadius={60} outerRadius={90} paddingAngle={4} dataKey="value">
+                <Pie data={categoryDistribution} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
                   {categoryDistribution.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                 </Pie>
                 <Tooltip />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[280px] flex items-center justify-center text-muted-foreground">Add products to see distribution</div>
+            <div className="h-[240px] flex items-center justify-center text-muted-foreground text-sm">Add products to see distribution</div>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-5">
-          <h3 className="font-semibold text-foreground mb-4">Stock Status</h3>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+          <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Stock Status</h3>
           {stockStatus.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={220}>
               <PieChart>
-                <Pie data={stockStatus} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={4} dataKey="value">
+                <Pie data={stockStatus} cx="50%" cy="50%" innerRadius={45} outerRadius={70} paddingAngle={4} dataKey="value">
                   {stockStatus.map((entry, i) => <Cell key={i} fill={entry.fill} />)}
                 </Pie>
                 <Tooltip />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: 12 }} />
               </PieChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[250px] flex items-center justify-center text-muted-foreground">Add products to see stock status</div>
+            <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">Add products to see stock status</div>
           )}
         </div>
 
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-5">
-          <h3 className="font-semibold text-foreground mb-4">Product Stock Levels</h3>
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5">
+          <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Product Stock Levels</h3>
           {topProducts.length > 0 ? (
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={220}>
               <BarChart data={topProducts} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={11} width={120} />
+                <XAxis type="number" stroke="hsl(var(--muted-foreground))" fontSize={10} />
+                <YAxis type="category" dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={10} width={80} />
                 <Tooltip />
                 <Bar dataKey="stock" fill="hsl(210 100% 50%)" radius={[0, 4, 4, 0]} />
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-[250px] flex items-center justify-center text-muted-foreground">Add products to see stock levels</div>
+            <div className="h-[220px] flex items-center justify-center text-muted-foreground text-sm">Add products to see stock levels</div>
           )}
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl p-5">
-        <h3 className="font-semibold text-foreground mb-4">Recent Sales</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Recent Sales</h3>
+        <div className="overflow-x-auto -mx-4 sm:mx-0">
+          <table className="w-full text-sm min-w-[550px]">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Date</th>
-                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Customer</th>
-                <th className="text-center py-3 px-4 text-muted-foreground font-medium">Items</th>
-                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Total</th>
-                <th className="text-center py-3 px-4 text-muted-foreground font-medium">Payment</th>
-                <th className="text-center py-3 px-4 text-muted-foreground font-medium">Status</th>
+                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs">Date</th>
+                <th className="text-left py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs">Customer</th>
+                <th className="text-center py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs">Items</th>
+                <th className="text-right py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs">Total</th>
+                <th className="text-center py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs">Payment</th>
+                <th className="text-center py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs">Status</th>
               </tr>
             </thead>
             <tbody>
@@ -169,12 +169,12 @@ const Dashboard = () => {
               )}
               {sales.slice(0, 5).map((sale) => (
                 <tr key={sale.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-3 px-4">{sale.date}</td>
-                  <td className="py-3 px-4 font-medium text-foreground">{sale.customer}</td>
-                  <td className="py-3 px-4 text-center">{sale.items}</td>
-                  <td className="py-3 px-4 text-right font-mono">₹{Number(sale.total).toLocaleString("en-IN")}</td>
-                  <td className="py-3 px-4 text-center">{sale.payment}</td>
-                  <td className="py-3 px-4 text-center">
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{sale.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{sale.customer}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{sale.items}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-right font-mono text-xs sm:text-sm">₹{Number(sale.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-center text-xs sm:text-sm">{sale.payment}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">
                     <span className={sale.status === "Completed" ? "status-in-stock" : "status-low-stock"}>
                       {sale.status}
                     </span>
