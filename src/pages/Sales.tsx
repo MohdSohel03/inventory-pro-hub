@@ -196,11 +196,11 @@ const Sales = () => {
               )}
               {filtered.map(s => (
                 <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{s.date}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(s.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{s.customer}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{s.items}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4">{Number(s.discount)}%</td>
-                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">₹{Number(s.total).toLocaleString("en-IN")}</td>
+                  <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs sm:text-sm">{formatCurrency(Number(s.total))}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{s.payment}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4"><span className={s.status === "Completed" ? "status-in-stock" : "status-low-stock"}>{s.status}</span></td>
                 </tr>
