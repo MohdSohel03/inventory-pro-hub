@@ -15,6 +15,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
 import { useAppSettings } from "@/contexts/AppSettingsContext";
+import { BarcodeScanner } from "@/components/products/BarcodeScanner";
 
 const Sales = () => {
   const { user } = useAuth();
