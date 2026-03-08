@@ -100,7 +100,7 @@ const Products = () => {
 
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 opacity-0 animate-fade-in">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Products</h1>
           <p className="text-muted-foreground text-sm mt-0.5">Manage your product catalog</p>
@@ -119,7 +119,7 @@ const Products = () => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Search products, SKUs..." className="pl-9" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
@@ -168,10 +168,10 @@ const Products = () => {
           {paginated.length === 0 && (
             <div className="col-span-full py-12 text-center text-muted-foreground">No products yet. Add your first product!</div>
           )}
-          {paginated.map(p => {
+          {paginated.map((p, idx) => {
             const status = getStatus(p);
             return (
-              <div key={p.id} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md transition-shadow group">
+              <div key={p.id} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group opacity-0 animate-fade-in-scale hover:-translate-y-1" style={{ animationDelay: `${200 + idx * 80}ms` }}>
                 <div className="aspect-[4/3] bg-muted relative overflow-hidden">
                   {p.image_url ? (
                     <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
@@ -223,7 +223,7 @@ const Products = () => {
         </div>
       ) : (
         /* List View */
-        <div className="bg-card border border-border rounded-xl overflow-hidden">
+        <div className="bg-card border border-border rounded-xl overflow-hidden opacity-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
           <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[700px]">
               <thead>
@@ -237,10 +237,10 @@ const Products = () => {
                 {paginated.length === 0 && (
                   <tr><td colSpan={11} className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</td></tr>
                 )}
-                {paginated.map(p => {
+                {paginated.map((p, idx) => {
                   const status = getStatus(p);
                   return (
-                    <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                    <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 60}ms` }}>
                       <td className="py-2 sm:py-3 px-3 sm:px-4">
                         <div className="w-10 h-10 rounded-lg bg-muted border border-border overflow-hidden flex items-center justify-center">
                           {p.image_url ? (

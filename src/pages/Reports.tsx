@@ -207,7 +207,7 @@ const Reports = () => {
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       {/* Filters */}
-      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-6 opacity-0 animate-fade-in">
         <div className="flex bg-card border border-border rounded-lg overflow-hidden w-full sm:w-auto">
           {["daily", "weekly", "monthly"].map(p => (
             <button
@@ -243,7 +243,7 @@ const Reports = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in-scale" style={{ animationDelay: "100ms" }}>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Total Sales</p>
             <TrendingUp className="w-4 h-4 text-emerald-500" />
@@ -251,7 +251,7 @@ const Reports = () => {
           <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{formatCurrency(totalSales)}</p>
           <p className="text-xs text-muted-foreground mt-1">{filteredSales.length} transactions</p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in-scale" style={{ animationDelay: "200ms" }}>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Total Purchases</p>
             <TrendingDown className="w-4 h-4 text-orange-500" />
@@ -259,7 +259,7 @@ const Reports = () => {
           <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{formatCurrency(totalPurchases)}</p>
           <p className="text-xs text-muted-foreground mt-1">{filteredPurchases.length} orders</p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in-scale" style={{ animationDelay: "300ms" }}>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Net Profit</p>
             <Package className="w-4 h-4 text-primary" />
@@ -276,7 +276,7 @@ const Reports = () => {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-4 mb-6">
         {/* Sales & Purchases Trend */}
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "350ms" }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground text-sm sm:text-base">
               Sales & Purchases Trend
@@ -343,7 +343,7 @@ const Reports = () => {
         </div>
 
         {/* Product Stock Levels */}
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "400ms" }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground text-sm sm:text-base">Product Stock Levels</h3>
             <span className="text-xs text-muted-foreground">{products.length} products</span>
@@ -391,7 +391,7 @@ const Reports = () => {
       </div>
 
       {/* Low Stock Table */}
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "450ms" }}>
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="font-semibold text-foreground text-sm sm:text-base">Low Stock Products</h3>

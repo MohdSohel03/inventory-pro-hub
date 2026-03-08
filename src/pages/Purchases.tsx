@@ -75,16 +75,16 @@ const Purchases = () => {
 
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-end mb-4">
+      <div className="flex items-center justify-end mb-4 opacity-0 animate-fade-in">
         {isAdmin && <Button size="sm" className="sm:size-default" onClick={() => setShowAdd(true)}><Plus className="w-4 h-4 mr-1 sm:mr-2" />Create Purchase</Button>}
       </div>
 
-      <div className="relative max-w-md mb-4">
+      <div className="relative max-w-md mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <Input placeholder="Search purchases..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden opacity-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[450px]">
             <thead>
@@ -98,8 +98,8 @@ const Purchases = () => {
               {filtered.length === 0 && (
                 <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">No purchases yet.</td></tr>
               )}
-              {filtered.map(p => (
-                <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+              {filtered.map((p, idx) => (
+                <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 50}ms` }}>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{p.supplier_name}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(p.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{p.items}</td>

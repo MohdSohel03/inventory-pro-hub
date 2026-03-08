@@ -133,12 +133,12 @@ const Sales = () => {
 
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
-      <div className="flex items-center justify-end gap-2 mb-4">
+      <div className="flex items-center justify-end gap-2 mb-4 opacity-0 animate-fade-in">
         <Button onClick={handleExport} variant="outline" size="sm" className="sm:size-default"><Download className="w-4 h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Export</span> CSV</Button>
         <Button onClick={() => setShowAdd(true)} size="sm" className="sm:size-default"><Plus className="w-4 h-4 mr-1 sm:mr-2" /><span>Create Sale</span></Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row gap-3 mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input placeholder="Search by customer, date, payment..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
@@ -175,7 +175,7 @@ const Sales = () => {
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden opacity-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[600px]">
             <thead>
@@ -194,8 +194,8 @@ const Sales = () => {
                   </td>
                 </tr>
               )}
-              {filtered.map(s => (
-                <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+              {filtered.map((s, idx) => (
+                <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 50}ms` }}>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(s.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{s.customer}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{s.items}</td>
