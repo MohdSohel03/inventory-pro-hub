@@ -188,7 +188,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "500ms" }}>
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "500ms" }}>
           <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Top Product Stock Levels</h3>
           {topProducts.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
