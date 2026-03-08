@@ -274,7 +274,7 @@ const Sales = () => {
                     <div key={i}>
                       <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
                         <div className="flex-1">
-                          <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "price", Number(p.selling_price)); }}>
+                          <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, { product: v, ...(p ? { price: Number(p.selling_price) } : {}) }); }}>
                             <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
                             <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name} (Stock: {p.stock})</SelectItem>)}</SelectContent>
                           </Select>
