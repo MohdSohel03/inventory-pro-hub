@@ -136,9 +136,41 @@ const Sales = () => {
         <Button onClick={() => setShowAdd(true)} size="sm" className="sm:size-default"><Plus className="w-4 h-4 mr-1 sm:mr-2" /><span>Create Sale</span></Button>
       </div>
 
-      <div className="relative max-w-md mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-        <Input placeholder="Search by customer, date, payment..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="relative flex-1 max-w-md">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input placeholder="Search by customer, date, payment..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}>
+                <CalendarIcon className="w-4 h-4 mr-1" />
+                {dateFrom ? format(dateFrom, "dd MMM yyyy") : "From"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+          <span className="text-muted-foreground text-sm">–</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !dateTo && "text-muted-foreground")}>
+                <CalendarIcon className="w-4 h-4 mr-1" />
+                {dateTo ? format(dateTo, "dd MMM yyyy") : "To"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus className="p-3 pointer-events-auto" />
+            </PopoverContent>
+          </Popover>
+          {hasDateFilter && (
+            <Button variant="ghost" size="sm" onClick={() => { setDateFrom(undefined); setDateTo(undefined); }}>
+              <X className="w-4 h-4 mr-1" /> Clear
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="bg-card border border-border rounded-xl overflow-hidden">
