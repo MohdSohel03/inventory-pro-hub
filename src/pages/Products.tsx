@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
+import { useAppSettings } from "@/contexts/AppSettingsContext";
 
 const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "" };
 
