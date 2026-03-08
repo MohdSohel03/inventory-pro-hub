@@ -4,6 +4,7 @@ import {
   BarChart3, AlertTriangle, Settings, ChevronLeft, ChevronRight, X, UserPlus
 } from "lucide-react";
 import { useRole } from "@/contexts/RoleContext";
+import inventProLogo from "@/assets/inventpro-logo.png";
 
 const commonNavItems = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/" },
