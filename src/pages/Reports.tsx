@@ -309,8 +309,8 @@ const Reports = () => {
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
-                  tickFormatter={v => v >= 1000 ? `₹${(v / 1000).toFixed(0)}k` : `₹${v}`}
-                  width={55}
+                  tickFormatter={v => v >= 1000 ? `${currencySymbol}${(v / 1000).toFixed(0)}k` : `${currencySymbol}${v}`}
+                  width={60}
                 />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend
