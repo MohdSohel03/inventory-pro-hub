@@ -97,12 +97,18 @@ const Products = () => {
   const handleScanResult = (code: string) => {
     setSearch(code);
     setPage(1);
-    const found = products.find(p => p.sku.toLowerCase() === code.toLowerCase());
+    const found = products.find(p => p.barcode === code || p.sku.toLowerCase() === code.toLowerCase());
     if (found) {
       toast({ title: "Product Found", description: `Found: ${found.name} (${found.sku})` });
     } else {
       toast({ title: "No Match", description: `No product found for barcode: ${code}. You can add it as a new product.`, variant: "destructive" });
     }
+  };
+
+  const handleBarcodeScanInForm = (code: string) => {
+    setForm(f => ({ ...f, barcode: code }));
+    setShowFormScanner(false);
+    toast({ title: "Barcode scanned", description: `Barcode: ${code}` });
   };
 
   return (
