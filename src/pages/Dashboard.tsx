@@ -89,7 +89,7 @@ const Dashboard = () => {
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       {/* Quick Actions */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6 opacity-0 animate-fade-in" style={{ animationDelay: "0ms" }}>
         <Button asChild size="sm" variant="default">
           <Link to="/sales"><Plus className="w-3.5 h-3.5 mr-1.5" />New Sale</Link>
         </Button>
@@ -109,11 +109,11 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6">
-        <StatCard title="Total Products" value={products.length} subtitle="In catalog" icon={<Package className="w-4 h-4 sm:w-5 sm:h-5" />} />
-        <StatCard title="Low Stock" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-warning" />
-        <StatCard title="Inventory Value" value={formatCurrency(totalValue)} icon={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />} />
-        <StatCard title="Total Sales" value={sales.length} subtitle={formatCurrency(totalSalesAmount)} icon={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />} />
-        <StatCard title="Profit Margin" value={`${profitMargin}%`} subtitle="Overall" icon={<TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-success" />
+        <StatCard title="Total Products" value={products.length} subtitle="In catalog" icon={<Package className="w-4 h-4 sm:w-5 sm:h-5" />} delay={50} />
+        <StatCard title="Low Stock" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-warning" delay={100} />
+        <StatCard title="Inventory Value" value={formatCurrency(totalValue)} icon={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />} delay={150} />
+        <StatCard title="Total Sales" value={sales.length} subtitle={formatCurrency(totalSalesAmount)} icon={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />} delay={200} />
+        <StatCard title="Profit Margin" value={`${profitMargin}%`} subtitle="Overall" icon={<TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-success" delay={250} />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
