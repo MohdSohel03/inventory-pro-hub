@@ -137,29 +137,13 @@ const Products = () => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-3 mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input placeholder="Search products, SKUs..." className="pl-9" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
-        </div>
+      <div className="flex flex-col gap-3 mb-4 opacity-0 animate-fade-in" style={{ animationDelay: "100ms" }}>
         <div className="flex gap-2">
-          <Select value={catFilter} onValueChange={v => { setCatFilter(v); setPage(1); }}>
-            <SelectTrigger className="w-full sm:w-[160px]"><SelectValue placeholder="All Categories" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
-            <SelectTrigger className="w-full sm:w-[140px]"><SelectValue placeholder="All Status" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              <SelectItem value="In Stock">In Stock</SelectItem>
-              <SelectItem value="Low Stock">Low Stock</SelectItem>
-              <SelectItem value="Out of Stock">Out of Stock</SelectItem>
-            </SelectContent>
-          </Select>
-          <div className="flex border border-border rounded-lg overflow-hidden">
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input placeholder="Search products, SKUs..." className="pl-9" value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+          </div>
+          <div className="flex border border-border rounded-lg overflow-hidden shrink-0">
             <button
               onClick={() => { setViewMode("grid"); setPage(1); }}
               className={`p-2 transition-colors ${viewMode === "grid" ? "bg-primary text-primary-foreground" : "bg-background text-muted-foreground hover:bg-muted"}`}
@@ -173,6 +157,24 @@ const Products = () => {
               <List className="w-4 h-4" />
             </button>
           </div>
+        </div>
+        <div className="flex gap-2">
+          <Select value={catFilter} onValueChange={v => { setCatFilter(v); setPage(1); }}>
+            <SelectTrigger className="flex-1 sm:w-[160px]"><SelectValue placeholder="All Categories" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <Select value={statusFilter} onValueChange={v => { setStatusFilter(v); setPage(1); }}>
+            <SelectTrigger className="flex-1 sm:w-[140px]"><SelectValue placeholder="All Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Status</SelectItem>
+              <SelectItem value="In Stock">In Stock</SelectItem>
+              <SelectItem value="Low Stock">Low Stock</SelectItem>
+              <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
