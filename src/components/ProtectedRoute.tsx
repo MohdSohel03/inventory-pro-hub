@@ -16,7 +16,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
           <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
           <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
         </div>
-        <p className="text-sm text-muted-foreground">Loading StockPilot...</p>
+        <p className="text-sm text-muted-foreground">Loading InventPro...</p>
       </div>
     );
   }
