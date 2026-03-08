@@ -117,7 +117,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "300ms" }}>
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "300ms" }}>
           <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Sales & Purchases Trend</h3>
           {salesTrend.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
@@ -139,7 +139,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "400ms" }}>
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "400ms" }}>
           <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Category Distribution</h3>
           {categoryDistribution.length > 0 ? (
             <ResponsiveContainer width="100%" height={240}>
@@ -161,7 +161,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "450ms" }}>
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "450ms" }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground text-sm sm:text-base">Stock Status</h3>
             {lowStockCount > 0 && (
@@ -188,7 +188,7 @@ const Dashboard = () => {
           )}
         </div>
 
-        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "500ms" }}>
+        <div className="lg:col-span-2 bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "500ms" }}>
           <h3 className="font-semibold text-foreground mb-4 text-sm sm:text-base">Top Product Stock Levels</h3>
           {topProducts.length > 0 ? (
             <ResponsiveContainer width="100%" height={220}>
@@ -209,7 +209,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "550ms" }}>
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "550ms" }}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-foreground text-sm sm:text-base">Recent Sales</h3>
           {sales.length > 5 && (

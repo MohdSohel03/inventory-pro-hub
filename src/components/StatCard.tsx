@@ -13,7 +13,7 @@ interface StatCardProps {
 export function StatCard({ title, value, subtitle, trend, icon, iconColor = "text-primary", delay = 0 }: StatCardProps) {
   return (
     <div
-      className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 opacity-0 animate-fade-in-scale hover:-translate-y-0.5"
+      className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 opacity-0 animate-fade-in-scale hover:-translate-y-1.5 hover:scale-[1.02] cursor-pointer group"
       style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
     >
       <div className="flex items-start justify-between gap-2">
@@ -23,7 +23,7 @@ export function StatCard({ title, value, subtitle, trend, icon, iconColor = "tex
           {subtitle && <p className="text-xs sm:text-sm text-muted-foreground mt-1 truncate">{subtitle}</p>}
           {trend && <p className="text-xs sm:text-sm text-success font-medium mt-1 truncate">{trend}</p>}
         </div>
-        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 ${iconColor}`}>
+        <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0 ${iconColor} group-hover:scale-110 transition-transform duration-300`}>
           {icon}
         </div>
       </div>
