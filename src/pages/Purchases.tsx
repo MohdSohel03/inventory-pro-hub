@@ -84,7 +84,7 @@ const Purchases = () => {
         <Input placeholder="Search purchases..." className="pl-9" value={search} onChange={e => setSearch(e.target.value)} />
       </div>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
+      <div className="bg-card border border-border rounded-xl overflow-hidden opacity-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
         <div className="overflow-x-auto">
           <table className="w-full text-sm min-w-[450px]">
             <thead>
