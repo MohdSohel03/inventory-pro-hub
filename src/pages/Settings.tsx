@@ -90,19 +90,18 @@ const Settings = () => {
     return (localStorage.getItem("theme_mode") as "dark" | "light" | "system") || "dark";
   });
 
-  // General
+  // App Preferences
   const [currency, setCurrency] = useState(() => localStorage.getItem("app_currency") || "INR");
   const [language, setLanguage] = useState(() => localStorage.getItem("app_language") || "en");
   const [dateFormat, setDateFormat] = useState(() => localStorage.getItem("app_date_format") || "DD/MM/YYYY");
   const [timezone, setTimezone] = useState(() => localStorage.getItem("app_timezone") || "Asia/Kolkata");
+  const [defaultMinStock, setDefaultMinStock] = useState(() => localStorage.getItem("default_min_stock") || "10");
+  const [itemsPerPage, setItemsPerPage] = useState(() => localStorage.getItem("items_per_page") || "25");
+  const [autoSku, setAutoSku] = useState(() => localStorage.getItem("auto_sku") !== "false");
 
   // Notifications
   const [lowStockAlerts, setLowStockAlerts] = useState(() => localStorage.getItem("notif_low_stock") !== "false");
   const [salesAlerts, setSalesAlerts] = useState(() => localStorage.getItem("notif_sales") !== "false");
-
-  // Inventory
-  const [defaultMinStock, setDefaultMinStock] = useState(() => localStorage.getItem("default_min_stock") || "10");
-  const [autoSku, setAutoSku] = useState(() => localStorage.getItem("auto_sku") !== "false");
 
   // Data export
   const [exporting, setExporting] = useState(false);
