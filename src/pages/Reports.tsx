@@ -205,6 +205,31 @@ const Reports = () => {
     toast({ title: "Exported!", description: `${lowStockProducts.length} products exported to CSV` });
   };
 
+  const handleExportReportPDF = () => {
+    const reportColumns = [
+      { key: "date", label: "Date" },
+      { key: "customer", label: "Customer" },
+      { key: "items", label: "Items" },
+      { key: "discount", label: "Discount (%)" },
+      { key: "total", label: "Total" },
+      { key: "payment", label: "Payment" },
+      { key: "status", label: "Status" },
+    ];
+    exportToPDF({
+      title: "Sales & Purchase Report",
+      subtitle: `Period: ${startDate} to ${endDate} (${PERIOD_LABELS[period]})`,
+      summary: [
+        { label: "Total Sales", value: formatCurrency(totalSales) },
+        { label: "Total Purchases", value: formatCurrency(totalPurchases) },
+        { label: "Net Profit", value: `${profit >= 0 ? "+" : ""}${formatCurrency(Math.abs(profit))}` },
+      ],
+      columns: reportColumns,
+      data: filteredSales,
+      fileName: `report-${startDate}-to-${endDate}`,
+    });
+    toast({ title: "PDF Downloaded!", description: "Report exported as PDF" });
+  };
+
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       {/* Filters */}
