@@ -11,6 +11,7 @@ import { exportToCSV } from "@/lib/export-csv";
 
 const Reports = () => {
   const { user } = useAuth();
+  const { toast } = useToast();
   const [period, setPeriod] = useState("monthly");
   const [startDate, setStartDate] = useState("2026-01-01");
   const [endDate, setEndDate] = useState("2026-03-06");
