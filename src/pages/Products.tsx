@@ -63,6 +63,9 @@ const Products = () => {
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
   const categories = [...new Set(products.map(p => p.category))];
+  const locations = [...new Set(products.map(p => p.location).filter(Boolean))];
+  const [customCategory, setCustomCategory] = useState(false);
+  const [customLocation, setCustomLocation] = useState(false);
 
   const handleSave = async () => {
     if (!user) return;
@@ -96,6 +99,7 @@ const Products = () => {
   const openEdit = (p: any) => {
     setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "", image_url: p.image_url || null, barcode: p.barcode || "" });
     setEditProduct(p);
+    setCustomCategory(false); setCustomLocation(false);
     setShowAdd(true);
   };
 
@@ -125,7 +129,7 @@ const Products = () => {
               <Button size="sm" variant="outline" onClick={() => setShowScanner(true)}>
                 <ScanLine className="w-4 h-4 mr-1 sm:mr-2" />Scan Product
               </Button>
-              <Button size="sm" onClick={() => { setForm(emptyProduct); setEditProduct(null); setShowAdd(true); }}>
+              <Button size="sm" onClick={() => { setForm(emptyProduct); setEditProduct(null); setCustomCategory(false); setCustomLocation(false); setShowAdd(true); }}>
                 <Plus className="w-4 h-4 mr-1 sm:mr-2" />Add Product
               </Button>
             </>
@@ -318,15 +322,23 @@ const Products = () => {
             </div>
             <div>
               <Label>Category</Label>
-              <Select value={categories.includes(form.category) ? form.category : "__custom__"} onValueChange={v => { if (v !== "__custom__") setForm({...form, category: v}); }}>
-                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                <SelectContent>
-                  {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  <SelectItem value="__custom__">+ New category</SelectItem>
-                </SelectContent>
-              </Select>
-              {!categories.includes(form.category) && (
-                <Input className="mt-2" value={form.category} onChange={e => setForm({...form, category: e.target.value})} placeholder="Enter new category name" />
+              {customCategory ? (
+                <div className="flex gap-2">
+                  <Input value={form.category} onChange={e => setForm({...form, category: e.target.value})} placeholder="Enter new category name" className="flex-1" />
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomCategory(false); if (categories.length) setForm({...form, category: categories[0]}); }}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Select value={form.category} onValueChange={v => setForm({...form, category: v})}>
+                    <SelectTrigger className="flex-1"><SelectValue placeholder="Select category" /></SelectTrigger>
+                    <SelectContent>
+                      {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomCategory(true); setForm({...form, category: ""}); }}>
+                    <Plus className="w-3 h-3 mr-1" />New
+                  </Button>
+                </div>
               )}
             </div>
             <div className="sm:col-span-2">
@@ -342,7 +354,27 @@ const Products = () => {
             <div><Label>Min Stock Alert</Label><Input type="number" value={form.min_stock} onChange={e => setForm({...form, min_stock: +e.target.value})} /></div>
             <div><Label>Cost Price</Label><Input type="number" value={form.cost_price} onChange={e => setForm({...form, cost_price: +e.target.value})} /></div>
             <div><Label>Selling Price</Label><Input type="number" value={form.selling_price} onChange={e => setForm({...form, selling_price: +e.target.value})} /></div>
-            <div className="sm:col-span-2"><Label>Location</Label><Input value={form.location} onChange={e => setForm({...form, location: e.target.value})} /></div>
+            <div className="sm:col-span-2">
+              <Label>Location</Label>
+              {customLocation ? (
+                <div className="flex gap-2">
+                  <Input value={form.location} onChange={e => setForm({...form, location: e.target.value})} placeholder="Enter new location" className="flex-1" />
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomLocation(false); if (locations.length) setForm({...form, location: locations[0]}); }}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Select value={form.location || ""} onValueChange={v => setForm({...form, location: v})}>
+                    <SelectTrigger className="flex-1"><SelectValue placeholder="Select location" /></SelectTrigger>
+                    <SelectContent>
+                      {locations.map(l => <SelectItem key={l} value={l!}>{l}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomLocation(true); setForm({...form, location: ""}); }}>
+                    <Plus className="w-3 h-3 mr-1" />New
+                  </Button>
+                </div>
+              )}
+            </div>
           </div>
           <DialogFooter className="flex-col sm:flex-row gap-2">
             <Button variant="outline" onClick={() => { setShowAdd(false); setEditProduct(null); }} className="w-full sm:w-auto">Cancel</Button>
