@@ -243,7 +243,7 @@ const Reports = () => {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in-scale" style={{ animationDelay: "100ms" }}>
           <div className="flex items-center justify-between">
             <p className="text-sm text-muted-foreground">Total Sales</p>
             <TrendingUp className="w-4 h-4 text-emerald-500" />
