@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Search, Trash2, ShoppingCart, Download, CalendarIcon, X, ScanLine } from "lucide-react";
+import { Plus, Search, Trash2, ShoppingCart, Download, CalendarIcon, X, ScanLine, FileText } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
+import { exportToPDF } from "@/lib/export-pdf";
 import { useAppSettings } from "@/contexts/AppSettingsContext";
 import { BarcodeScanner } from "@/components/products/BarcodeScanner";
 
@@ -158,9 +159,34 @@ const Sales = () => {
     toast({ title: "Exported!", description: `${filtered.length} sales exported to CSV` });
   };
 
+  const handleExportPDF = () => {
+    if (filtered.length === 0) {
+      toast({ title: "No data", description: "No sales to export", variant: "destructive" });
+      return;
+    }
+    const totalFiltered = filtered.reduce((s, sale) => s + Number(sale.total), 0);
+    exportToPDF({
+      title: "Sales Report",
+      subtitle: `${filtered.length} sales • Total: ${formatCurrency(totalFiltered)}`,
+      columns: [
+        { key: "date", label: "Date" },
+        { key: "customer", label: "Customer" },
+        { key: "items", label: "Items" },
+        { key: "discount", label: "Discount (%)" },
+        { key: "total", label: "Total" },
+        { key: "payment", label: "Payment" },
+        { key: "status", label: "Status" },
+      ],
+      data: filtered,
+      fileName: `sales-${new Date().toISOString().slice(0, 10)}`,
+    });
+    toast({ title: "PDF Downloaded!", description: `${filtered.length} sales exported as PDF` });
+  };
+
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       <div className="flex items-center justify-end gap-2 mb-4 opacity-0 animate-fade-in">
+        <Button onClick={handleExportPDF} variant="outline" size="sm" className="sm:size-default"><FileText className="w-4 h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Export</span> PDF</Button>
         <Button onClick={handleExport} variant="outline" size="sm" className="sm:size-default"><Download className="w-4 h-4 mr-1 sm:mr-2" /><span className="hidden sm:inline">Export</span> CSV</Button>
         <Button onClick={() => setShowAdd(true)} size="sm" className="sm:size-default"><Plus className="w-4 h-4 mr-1 sm:mr-2" /><span>Create Sale</span></Button>
       </div>

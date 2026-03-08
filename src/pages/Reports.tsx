@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Download, TrendingUp, TrendingDown, Package } from "lucide-react";
+import { Download, TrendingUp, TrendingDown, Package, FileText } from "lucide-react";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Cell, Legend, Area, AreaChart
@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
+import { exportToPDF } from "@/lib/export-pdf";
 import { useAppSettings } from "@/contexts/AppSettingsContext";
 
 const PERIOD_LABELS: Record<string, string> = {
@@ -204,6 +205,31 @@ const Reports = () => {
     toast({ title: "Exported!", description: `${lowStockProducts.length} products exported to CSV` });
   };
 
+  const handleExportReportPDF = () => {
+    const reportColumns = [
+      { key: "date", label: "Date" },
+      { key: "customer", label: "Customer" },
+      { key: "items", label: "Items" },
+      { key: "discount", label: "Discount (%)" },
+      { key: "total", label: "Total" },
+      { key: "payment", label: "Payment" },
+      { key: "status", label: "Status" },
+    ];
+    exportToPDF({
+      title: "Sales & Purchase Report",
+      subtitle: `Period: ${startDate} to ${endDate} (${PERIOD_LABELS[period]})`,
+      summary: [
+        { label: "Total Sales", value: formatCurrency(totalSales) },
+        { label: "Total Purchases", value: formatCurrency(totalPurchases) },
+        { label: "Net Profit", value: `${profit >= 0 ? "+" : ""}${formatCurrency(Math.abs(profit))}` },
+      ],
+      columns: reportColumns,
+      data: filteredSales,
+      fileName: `report-${startDate}-to-${endDate}`,
+    });
+    toast({ title: "PDF Downloaded!", description: "Report exported as PDF" });
+  };
+
   return (
     <div className="p-3 sm:p-6 max-w-[1400px] mx-auto">
       {/* Filters */}
@@ -233,10 +259,14 @@ const Reports = () => {
             <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full sm:w-40" />
           </div>
         </div>
-        <div className="sm:ml-auto">
+        <div className="sm:ml-auto flex gap-2">
+          <Button onClick={handleExportReportPDF} variant="outline" size="sm">
+            <FileText className="w-4 h-4 mr-1.5" />
+            <span className="hidden sm:inline">Export</span> PDF
+          </Button>
           <Button onClick={handleExportSales} variant="outline" size="sm">
             <Download className="w-4 h-4 mr-1.5" />
-            <span className="hidden sm:inline">Export Sales</span> CSV
+            <span className="hidden sm:inline">Export</span> CSV
           </Button>
         </div>
       </div>
