@@ -105,7 +105,7 @@ const Sales = () => {
     }
 
     setSaving(false);
-    toast({ title: "Sale created!", description: `₹${total.toLocaleString("en-IN", { minimumFractionDigits: 2 })} sale to ${customer.trim()}` });
+    toast({ title: "Sale created!", description: `${formatCurrency(total)} sale to ${customer.trim()}` });
     setShowAdd(false);
     setCustomer("");
     setDiscount(0);
