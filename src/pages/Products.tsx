@@ -312,8 +312,20 @@ const Products = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
             <ProductImageUpload imageUrl={form.image_url} onImageChange={(url) => setForm({ ...form, image_url: url })} />
             <div className="sm:col-span-2"><Label>Product Name</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
-            <div><Label>SKU</Label><Input value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} /></div>
+            <div>
+              <Label>SKU <span className="text-xs text-muted-foreground font-normal">{!editProduct ? "(auto-generated if empty)" : ""}</span></Label>
+              <Input value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} placeholder={!editProduct ? "Leave blank to auto-generate" : ""} />
+            </div>
             <div><Label>Category</Label><Input value={form.category} onChange={e => setForm({...form, category: e.target.value})} /></div>
+            <div className="sm:col-span-2">
+              <Label>Barcode</Label>
+              <div className="flex gap-2">
+                <Input value={form.barcode} onChange={e => setForm({...form, barcode: e.target.value})} placeholder="Scan or enter barcode" className="flex-1" />
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowFormScanner(true)}>
+                  <ScanLine className="w-4 h-4 mr-1" />Scan
+                </Button>
+              </div>
+            </div>
             <div><Label>Stock</Label><Input type="number" value={form.stock} onChange={e => setForm({...form, stock: +e.target.value})} /></div>
             <div><Label>Min Stock Alert</Label><Input type="number" value={form.min_stock} onChange={e => setForm({...form, min_stock: +e.target.value})} /></div>
             <div><Label>Cost Price</Label><Input type="number" value={form.cost_price} onChange={e => setForm({...form, cost_price: +e.target.value})} /></div>
