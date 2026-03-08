@@ -168,7 +168,7 @@ const Products = () => {
           {paginated.length === 0 && (
             <div className="col-span-full py-12 text-center text-muted-foreground">No products yet. Add your first product!</div>
           )}
-          {paginated.map(p => {
+          {paginated.map((p, idx) => {
             const status = getStatus(p);
             return (
               <div key={p.id} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group opacity-0 animate-fade-in-scale hover:-translate-y-1" style={{ animationDelay: `${200 + idx * 80}ms` }}>
