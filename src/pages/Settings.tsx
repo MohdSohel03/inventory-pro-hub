@@ -137,48 +137,20 @@ const Settings = () => {
     toast({ title: `${label} updated`, description: detail });
   };
 
-  const handleCurrencyChange = (val: string) => {
-    setCurrency(val);
-    const cur = CURRENCIES.find(c => c.value === val);
-    saveSetting("app_currency", val, "Currency", `Currency set to ${cur?.label}`);
-  };
-
-  const handleLanguageChange = (val: string) => {
-    setLanguage(val);
-    const lang = LANGUAGES.find(l => l.value === val);
-    saveSetting("app_language", val, "Language", `Language set to ${lang?.label}`);
-  };
-
-  const handleDateFormatChange = (val: string) => {
-    setDateFormat(val);
-    saveSetting("app_date_format", val, "Date format", `Date format set to ${val}`);
-  };
-
-  const handleTimezoneChange = (val: string) => {
-    setTimezone(val);
-    const tz = TIME_ZONES.find(t => t.value === val);
-    saveSetting("app_timezone", val, "Time zone", `Time zone set to ${tz?.label}`);
+  const handleSavePreferences = () => {
+    localStorage.setItem("default_min_stock", defaultMinStock);
+    localStorage.setItem("app_currency", currency);
+    localStorage.setItem("app_date_format", dateFormat);
+    localStorage.setItem("items_per_page", itemsPerPage);
+    localStorage.setItem("app_language", language);
+    localStorage.setItem("app_timezone", timezone);
+    toast({ title: "Preferences saved", description: "Your app preferences have been updated" });
   };
 
   const handleToggle = (key: string, value: boolean, setter: (v: boolean) => void, label: string) => {
     setter(value);
     localStorage.setItem(key, String(value));
     toast({ title: `${label} ${value ? "enabled" : "disabled"}` });
-  };
-
-  const handleMinStockChange = (val: string) => {
-    setDefaultMinStock(val);
-    localStorage.setItem("default_min_stock", val);
-  };
-
-  const handleMinStockSave = () => {
-    const num = parseInt(defaultMinStock);
-    if (isNaN(num) || num < 0) {
-      toast({ title: "Invalid value", description: "Please enter a valid number", variant: "destructive" });
-      return;
-    }
-    localStorage.setItem("default_min_stock", String(num));
-    toast({ title: "Default min stock updated", description: `Default minimum stock set to ${num}` });
   };
 
   const handleExportAll = async () => {
