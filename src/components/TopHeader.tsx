@@ -53,7 +53,9 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
       return data.filter(p => p.stock <= p.min_stock);
     },
     enabled: !!user,
-    refetchInterval: 60000, // refresh every minute
+    staleTime: 30000, // consider data fresh for 30s
+    gcTime: 5 * 60 * 1000, // keep in cache 5 min
+    refetchInterval: 60000,
   });
 
   const alertCount = lowStockProducts.length;
