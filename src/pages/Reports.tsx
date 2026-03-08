@@ -259,10 +259,14 @@ const Reports = () => {
             <Input type="date" value={endDate} onChange={e => setEndDate(e.target.value)} className="w-full sm:w-40" />
           </div>
         </div>
-        <div className="sm:ml-auto">
+        <div className="sm:ml-auto flex gap-2">
+          <Button onClick={handleExportReportPDF} variant="outline" size="sm">
+            <FileText className="w-4 h-4 mr-1.5" />
+            <span className="hidden sm:inline">Export</span> PDF
+          </Button>
           <Button onClick={handleExportSales} variant="outline" size="sm">
             <Download className="w-4 h-4 mr-1.5" />
-            <span className="hidden sm:inline">Export Sales</span> CSV
+            <span className="hidden sm:inline">Export</span> CSV
           </Button>
         </div>
       </div>
