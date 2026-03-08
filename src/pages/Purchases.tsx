@@ -80,8 +80,8 @@ const Purchases = () => {
     if (editingId) {
       const { error } = await supabase.from("purchases").update({
         supplier_name: supplier,
-        items: items.length,
-        total,
+        items: editItemsCount,
+        total: editTotal,
         status,
       }).eq("id", editingId);
       setSaving(false);
