@@ -161,7 +161,7 @@ const Dashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in" style={{ animationDelay: "450ms" }}>
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in hover:border-primary/20 hover:shadow-xl hover:shadow-primary/5 transition-all duration-300 hover:-translate-y-1" style={{ animationDelay: "450ms" }}>
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-semibold text-foreground text-sm sm:text-base">Stock Status</h3>
             {lowStockCount > 0 && (
