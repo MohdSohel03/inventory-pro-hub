@@ -321,15 +321,23 @@ const Products = () => {
             </div>
             <div>
               <Label>Category</Label>
-              <Select value={categories.includes(form.category) ? form.category : "__custom__"} onValueChange={v => { if (v !== "__custom__") setForm({...form, category: v}); }}>
-                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
-                <SelectContent>
-                  {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  <SelectItem value="__custom__">+ New category</SelectItem>
-                </SelectContent>
-              </Select>
-              {!categories.includes(form.category) && (
-                <Input className="mt-2" value={form.category} onChange={e => setForm({...form, category: e.target.value})} placeholder="Enter new category name" />
+              {customCategory ? (
+                <div className="flex gap-2">
+                  <Input value={form.category} onChange={e => setForm({...form, category: e.target.value})} placeholder="Enter new category name" className="flex-1" />
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomCategory(false); if (categories.length) setForm({...form, category: categories[0]}); }}>Cancel</Button>
+                </div>
+              ) : (
+                <div className="flex gap-2">
+                  <Select value={form.category} onValueChange={v => setForm({...form, category: v})}>
+                    <SelectTrigger className="flex-1"><SelectValue placeholder="Select category" /></SelectTrigger>
+                    <SelectContent>
+                      {categories.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button type="button" variant="outline" size="sm" onClick={() => { setCustomCategory(true); setForm({...form, category: ""}); }}>
+                    <Plus className="w-3 h-3 mr-1" />New
+                  </Button>
+                </div>
               )}
             </div>
             <div className="sm:col-span-2">
