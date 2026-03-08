@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Plus, Search, Trash2, ShoppingCart, Download, CalendarIcon, X } from "lucide-react";
+import { Plus, Search, Trash2, ShoppingCart, Download, CalendarIcon, X, ScanLine } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
@@ -15,6 +15,7 @@ import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
 import { useAppSettings } from "@/contexts/AppSettingsContext";
+import { BarcodeScanner } from "@/components/products/BarcodeScanner";
 
 const Sales = () => {
   const { user } = useAuth();
@@ -32,6 +33,7 @@ const Sales = () => {
   const [discount, setDiscount] = useState(0);
   const [items, setItems] = useState([{ product: "", quantity: 1, price: 0 }]);
   const [saving, setSaving] = useState(false);
+  const [showSaleScanner, setShowSaleScanner] = useState(false);
 
   const fetchData = async () => {
     if (!user) return;
@@ -61,6 +63,31 @@ const Sales = () => {
   const addItem = () => setItems([...items, { product: "", quantity: 1, price: 0 }]);
   const removeItem = (idx: number) => setItems(items.filter((_, i) => i !== idx));
   const updateItem = (idx: number, field: string, value: any) => setItems(items.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+
+  const handleSaleScan = (code: string) => {
+    const found = products.find(p => p.barcode === code || p.sku.toLowerCase() === code.toLowerCase());
+    if (found) {
+      // Check if already in items list
+      const existingIdx = items.findIndex(i => i.product === found.name);
+      if (existingIdx >= 0) {
+        updateItem(existingIdx, "quantity", items[existingIdx].quantity + 1);
+      } else {
+        // Add to first empty slot or append
+        const emptyIdx = items.findIndex(i => !i.product);
+        if (emptyIdx >= 0) {
+          const updated = [...items];
+          updated[emptyIdx] = { product: found.name, quantity: 1, price: Number(found.selling_price) };
+          setItems(updated);
+        } else {
+          setItems([...items, { product: found.name, quantity: 1, price: Number(found.selling_price) }]);
+        }
+      }
+      toast({ title: "Product added", description: `${found.name} — ${found.sku}` });
+    } else {
+      toast({ title: "Not found", description: `No product with barcode: ${code}`, variant: "destructive" });
+    }
+    setShowSaleScanner(false);
+  };
 
   const handleSave = async () => {
     if (!user) return;
@@ -235,7 +262,10 @@ const Sales = () => {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label>Products <span className="text-destructive">*</span></Label>
-                <Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button>
+                <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setShowSaleScanner(true)}><ScanLine className="w-3 h-3 mr-1" />Scan</Button>
+                  <Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button>
+                </div>
               </div>
               <div className="space-y-2">
                 {items.map((item, i) => {
@@ -287,6 +317,12 @@ const Sales = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <BarcodeScanner
+        open={showSaleScanner}
+        onClose={() => setShowSaleScanner(false)}
+        onScan={handleSaleScan}
+      />
     </div>
   );
 };

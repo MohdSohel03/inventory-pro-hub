@@ -14,7 +14,14 @@ import { useAppSettings } from "@/contexts/AppSettingsContext";
 import { BarcodeScanner } from "@/components/products/BarcodeScanner";
 import { ProductImageUpload } from "@/components/products/ProductImageUpload";
 
-const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "", image_url: null as string | null };
+const emptyProduct = { name: "", sku: "", category: "Electronics", stock: 0, cost_price: 0, selling_price: 0, min_stock: 0, location: "", image_url: null as string | null, barcode: "" };
+
+const generateSKU = (category: string, existingCount: number) => {
+  const prefix = category.slice(0, 3).toUpperCase();
+  const timestamp = Date.now().toString(36).toUpperCase().slice(-4);
+  const seq = String(existingCount + 1).padStart(3, "0");
+  return `${prefix}-${timestamp}${seq}`;
+};
 
 const Products = () => {
   const { user } = useAuth();
@@ -32,6 +39,7 @@ const Products = () => {
   const [page, setPage] = useState(1);
   const [saving, setSaving] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [showFormScanner, setShowFormScanner] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const perPage = viewMode === "grid" ? 9 : 5;
 
@@ -60,6 +68,10 @@ const Products = () => {
     if (!user) return;
     setSaving(true);
     const payload = { ...form };
+    // Auto-generate SKU for new products if empty
+    if (!editProduct && !payload.sku) {
+      payload.sku = generateSKU(payload.category, products.length);
+    }
     if (editProduct) {
       const { error } = await supabase.from("products").update({ ...payload, updated_at: new Date().toISOString() }).eq("id", editProduct.id);
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
@@ -82,7 +94,7 @@ const Products = () => {
   };
 
   const openEdit = (p: any) => {
-    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "", image_url: p.image_url || null });
+    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "", image_url: p.image_url || null, barcode: p.barcode || "" });
     setEditProduct(p);
     setShowAdd(true);
   };
@@ -90,12 +102,18 @@ const Products = () => {
   const handleScanResult = (code: string) => {
     setSearch(code);
     setPage(1);
-    const found = products.find(p => p.sku.toLowerCase() === code.toLowerCase());
+    const found = products.find(p => p.barcode === code || p.sku.toLowerCase() === code.toLowerCase());
     if (found) {
       toast({ title: "Product Found", description: `Found: ${found.name} (${found.sku})` });
     } else {
       toast({ title: "No Match", description: `No product found for barcode: ${code}. You can add it as a new product.`, variant: "destructive" });
     }
+  };
+
+  const handleBarcodeScanInForm = (code: string) => {
+    setForm(f => ({ ...f, barcode: code }));
+    setShowFormScanner(false);
+    toast({ title: "Barcode scanned", description: `Barcode: ${code}` });
   };
 
   return (
@@ -294,8 +312,20 @@ const Products = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4">
             <ProductImageUpload imageUrl={form.image_url} onImageChange={(url) => setForm({ ...form, image_url: url })} />
             <div className="sm:col-span-2"><Label>Product Name</Label><Input value={form.name} onChange={e => setForm({...form, name: e.target.value})} /></div>
-            <div><Label>SKU</Label><Input value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} /></div>
+            <div>
+              <Label>SKU <span className="text-xs text-muted-foreground font-normal">{!editProduct ? "(auto-generated if empty)" : ""}</span></Label>
+              <Input value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} placeholder={!editProduct ? "Leave blank to auto-generate" : ""} />
+            </div>
             <div><Label>Category</Label><Input value={form.category} onChange={e => setForm({...form, category: e.target.value})} /></div>
+            <div className="sm:col-span-2">
+              <Label>Barcode</Label>
+              <div className="flex gap-2">
+                <Input value={form.barcode} onChange={e => setForm({...form, barcode: e.target.value})} placeholder="Scan or enter barcode" className="flex-1" />
+                <Button type="button" variant="outline" size="sm" onClick={() => setShowFormScanner(true)}>
+                  <ScanLine className="w-4 h-4 mr-1" />Scan
+                </Button>
+              </div>
+            </div>
             <div><Label>Stock</Label><Input type="number" value={form.stock} onChange={e => setForm({...form, stock: +e.target.value})} /></div>
             <div><Label>Min Stock Alert</Label><Input type="number" value={form.min_stock} onChange={e => setForm({...form, min_stock: +e.target.value})} /></div>
             <div><Label>Cost Price</Label><Input type="number" value={form.cost_price} onChange={e => setForm({...form, cost_price: +e.target.value})} /></div>
@@ -323,7 +353,7 @@ const Products = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Barcode Scanner - Admin only */}
+      {/* Barcode Scanner - Search */}
       {isAdmin && (
         <BarcodeScanner
           open={showScanner}
@@ -331,6 +361,13 @@ const Products = () => {
           onScan={handleScanResult}
         />
       )}
+
+      {/* Barcode Scanner - Form */}
+      <BarcodeScanner
+        open={showFormScanner}
+        onClose={() => setShowFormScanner(false)}
+        onScan={handleBarcodeScanInForm}
+      />
     </div>
   );
 };
