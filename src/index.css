@@ -59,7 +59,7 @@
   }
 
   .light {
-    --background: 216 30% 96%;
+    --background: 216 25% 95%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -71,26 +71,26 @@
     --primary: 217 91% 50%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 214 32% 93%;
+    --secondary: 214 40% 92%;
     --secondary-foreground: 222 47% 11%;
 
-    --muted: 214 32% 93%;
-    --muted-foreground: 215 16% 47%;
+    --muted: 214 35% 93%;
+    --muted-foreground: 215 16% 42%;
 
-    --accent: 214 32% 93%;
+    --accent: 214 40% 92%;
     --accent-foreground: 222 47% 11%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 71% 45%;
+    --success: 142 71% 40%;
     --success-foreground: 0 0% 100%;
 
     --warning: 38 92% 50%;
     --warning-foreground: 0 0% 100%;
 
-    --border: 214 25% 88%;
-    --input: 214 25% 88%;
+    --border: 214 28% 85%;
+    --input: 214 28% 85%;
     --ring: 217 91% 50%;
 
     --sidebar-background: 220 30% 18%;
@@ -103,10 +103,10 @@
     --sidebar-ring: 217 91% 55%;
 
     --chart-1: 217 91% 50%;
-    --chart-2: 142 71% 45%;
+    --chart-2: 160 84% 39%;
     --chart-3: 38 92% 50%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 0 72% 51%;
+    --chart-4: 270 70% 55%;
+    --chart-5: 350 80% 55%;
   }
 }
 
@@ -119,6 +119,14 @@
     @apply bg-background text-foreground font-sans antialiased;
     font-family: 'Inter', sans-serif;
   }
+}
+
+/* Light mode card enhancements */
+.light .bg-card {
+  box-shadow: 0 1px 3px 0 hsl(217 91% 50% / 0.04), 0 1px 2px -1px hsl(217 91% 50% / 0.06);
+}
+.light .bg-card:hover {
+  box-shadow: 0 8px 25px -5px hsl(217 91% 50% / 0.08), 0 4px 10px -4px hsl(217 91% 50% / 0.06);
 }
 
 /* Custom scrollbar */

@@ -13,10 +13,11 @@ interface StatCardProps {
 export function StatCard({ title, value, subtitle, trend, icon, iconColor = "text-primary", delay = 0 }: StatCardProps) {
   return (
     <div
-      className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 opacity-0 animate-fade-in-scale hover:-translate-y-1.5 hover:scale-[1.02] cursor-pointer group"
+      className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10 opacity-0 animate-fade-in-scale hover:-translate-y-1.5 hover:scale-[1.02] cursor-pointer group relative overflow-hidden"
       style={{ animationDelay: `${delay}ms`, animationFillMode: "forwards" }}
     >
-      <div className="flex items-start justify-between gap-2">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-accent/[0.03] pointer-events-none" />
+      <div className="flex items-start justify-between gap-2 relative">
         <div className="min-w-0 flex-1">
           <p className="text-xs sm:text-sm text-muted-foreground font-medium truncate">{title}</p>
           <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground mt-1 truncate">{value}</p>
