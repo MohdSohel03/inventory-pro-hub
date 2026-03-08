@@ -62,7 +62,7 @@ const Sales = () => {
 
   const addItem = () => setItems([...items, { product: "", quantity: 1, price: 0 }]);
   const removeItem = (idx: number) => setItems(items.filter((_, i) => i !== idx));
-  const updateItem = (idx: number, field: string, value: any) => setItems(items.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+  const updateItem = (idx: number, updates: Record<string, any>) => setItems(prev => prev.map((item, i) => i === idx ? { ...item, ...updates } : item));
 
   const handleSaleScan = (code: string) => {
     const found = products.find(p => p.barcode === code || p.sku.toLowerCase() === code.toLowerCase());
