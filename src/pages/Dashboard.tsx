@@ -111,8 +111,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 mb-6">
         <StatCard title="Total Products" value={products.length} subtitle="In catalog" icon={<Package className="w-4 h-4 sm:w-5 sm:h-5" />} />
         <StatCard title="Low Stock" value={lowStockCount} subtitle="Need restocking" icon={<AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-warning" />
-        <StatCard title="Inventory Value" value={`₹${totalValue.toLocaleString("en-IN")}`} icon={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />} />
-        <StatCard title="Total Sales" value={sales.length} subtitle={`₹${totalSalesAmount.toLocaleString("en-IN")}`} icon={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />} />
+        <StatCard title="Inventory Value" value={formatCurrency(totalValue)} icon={<DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />} />
+        <StatCard title="Total Sales" value={sales.length} subtitle={formatCurrency(totalSalesAmount)} icon={<ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />} />
         <StatCard title="Profit Margin" value={`${profitMargin}%`} subtitle="Overall" icon={<TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />} iconColor="text-success" />
       </div>
 
