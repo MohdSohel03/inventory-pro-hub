@@ -252,42 +252,45 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* General */}
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
-        <SectionHeader title="General" subtitle="App preferences and regional settings" />
-        <div className="space-y-3">
-          <SettingRow icon={DollarSign} label="Currency" description="Display currency for all amounts">
-            <Select value={currency} onValueChange={handleCurrencyChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
-                <SelectValue>{selectedCurrency?.label}</SelectValue>
+      {/* App Preferences */}
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">App Preferences</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">Configure inventory defaults</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Low Stock Threshold</Label>
+            <Input
+              type="number"
+              min={0}
+              value={defaultMinStock}
+              onChange={e => setDefaultMinStock(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Currency</Label>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger>
+                <SelectValue>{selectedCurrency ? `${selectedCurrency.value} (${selectedCurrency.symbol})` : currency}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {CURRENCIES.map(c => (
-                  <SelectItem key={c.value} value={c.value}>
-                    <span className="font-medium">{c.symbol}</span>
-                    <span className="ml-2">{c.label}</span>
-                  </SelectItem>
+                  <SelectItem key={c.value} value={c.value}>{c.value} ({c.symbol})</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </SettingRow>
-
-          <SettingRow icon={Globe} label="Language" description="Preferred display language">
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
-                <SelectValue>{selectedLanguage?.label}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGES.map(l => (
-                  <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </SettingRow>
-
-          <SettingRow icon={Clock} label="Date Format" description="How dates are displayed">
-            <Select value={dateFormat} onValueChange={handleDateFormatChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
+          </div>
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Date Format</Label>
+            <Select value={dateFormat} onValueChange={setDateFormat}>
+              <SelectTrigger>
                 <SelectValue>{dateFormat}</SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -296,21 +299,26 @@ const Settings = () => {
                 ))}
               </SelectContent>
             </Select>
-          </SettingRow>
-
-          <SettingRow icon={Globe} label="Time Zone" description="Your local time zone">
-            <Select value={timezone} onValueChange={handleTimezoneChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
-                <SelectValue>{TIME_ZONES.find(t => t.value === timezone)?.label}</SelectValue>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Items Per Page</Label>
+            <Select value={itemsPerPage} onValueChange={setItemsPerPage}>
+              <SelectTrigger>
+                <SelectValue>{itemsPerPage}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {TIME_ZONES.map(t => (
-                  <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                {["10", "25", "50", "100"].map(v => (
+                  <SelectItem key={v} value={v}>{v}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </SettingRow>
+          </div>
         </div>
+
+        <Button onClick={handleSavePreferences} className="gap-2">
+          <Download className="w-4 h-4 rotate-180" />
+          Save Preferences
+        </Button>
       </div>
 
       {/* Notifications */}
@@ -329,33 +337,6 @@ const Settings = () => {
               onCheckedChange={(v) => handleToggle("notif_sales", v, setSalesAlerts, "Sales notifications")}
             />
           </SettingRow>
-        </div>
-      </div>
-
-      {/* Inventory */}
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
-        <SectionHeader title="Inventory" subtitle="Default inventory management settings" />
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <Package className="w-5 h-5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <Label className="text-foreground font-medium">Default Min Stock</Label>
-                <p className="text-xs text-muted-foreground">Default minimum stock level for new products</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Input
-                type="number"
-                min={0}
-                value={defaultMinStock}
-                onChange={e => handleMinStockChange(e.target.value)}
-                className="w-20 text-center"
-              />
-              <Button size="sm" variant="outline" onClick={handleMinStockSave}>Save</Button>
-            </div>
-          </div>
-
           <SettingRow icon={Hash} label="Auto-generate SKU" description="Automatically generate SKU codes for new products">
             <Switch
               checked={autoSku}
