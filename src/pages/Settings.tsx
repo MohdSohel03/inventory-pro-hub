@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
-  Sun, Moon, Monitor, Globe, DollarSign, Bell, BellOff, Package, Shield,
-  Download, Trash2, AlertTriangle, Clock, Hash, Loader2, Palette
+  Sun, Moon, Monitor, Bell, BellOff, Shield,
+  Download, Trash2, AlertTriangle, Hash, Loader2, Palette
 } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -90,19 +90,18 @@ const Settings = () => {
     return (localStorage.getItem("theme_mode") as "dark" | "light" | "system") || "dark";
   });
 
-  // General
+  // App Preferences
   const [currency, setCurrency] = useState(() => localStorage.getItem("app_currency") || "INR");
   const [language, setLanguage] = useState(() => localStorage.getItem("app_language") || "en");
   const [dateFormat, setDateFormat] = useState(() => localStorage.getItem("app_date_format") || "DD/MM/YYYY");
   const [timezone, setTimezone] = useState(() => localStorage.getItem("app_timezone") || "Asia/Kolkata");
+  const [defaultMinStock, setDefaultMinStock] = useState(() => localStorage.getItem("default_min_stock") || "10");
+  const [itemsPerPage, setItemsPerPage] = useState(() => localStorage.getItem("items_per_page") || "25");
+  const [autoSku, setAutoSku] = useState(() => localStorage.getItem("auto_sku") !== "false");
 
   // Notifications
   const [lowStockAlerts, setLowStockAlerts] = useState(() => localStorage.getItem("notif_low_stock") !== "false");
   const [salesAlerts, setSalesAlerts] = useState(() => localStorage.getItem("notif_sales") !== "false");
-
-  // Inventory
-  const [defaultMinStock, setDefaultMinStock] = useState(() => localStorage.getItem("default_min_stock") || "10");
-  const [autoSku, setAutoSku] = useState(() => localStorage.getItem("auto_sku") !== "false");
 
   // Data export
   const [exporting, setExporting] = useState(false);
@@ -132,54 +131,21 @@ const Settings = () => {
     }
   }, [themeMode]);
 
-  // Handlers
-  const saveSetting = (key: string, value: string, label: string, detail: string) => {
-    localStorage.setItem(key, value);
-    toast({ title: `${label} updated`, description: detail });
-  };
 
-  const handleCurrencyChange = (val: string) => {
-    setCurrency(val);
-    const cur = CURRENCIES.find(c => c.value === val);
-    saveSetting("app_currency", val, "Currency", `Currency set to ${cur?.label}`);
-  };
-
-  const handleLanguageChange = (val: string) => {
-    setLanguage(val);
-    const lang = LANGUAGES.find(l => l.value === val);
-    saveSetting("app_language", val, "Language", `Language set to ${lang?.label}`);
-  };
-
-  const handleDateFormatChange = (val: string) => {
-    setDateFormat(val);
-    saveSetting("app_date_format", val, "Date format", `Date format set to ${val}`);
-  };
-
-  const handleTimezoneChange = (val: string) => {
-    setTimezone(val);
-    const tz = TIME_ZONES.find(t => t.value === val);
-    saveSetting("app_timezone", val, "Time zone", `Time zone set to ${tz?.label}`);
+  const handleSavePreferences = () => {
+    localStorage.setItem("default_min_stock", defaultMinStock);
+    localStorage.setItem("app_currency", currency);
+    localStorage.setItem("app_date_format", dateFormat);
+    localStorage.setItem("items_per_page", itemsPerPage);
+    localStorage.setItem("app_language", language);
+    localStorage.setItem("app_timezone", timezone);
+    toast({ title: "Preferences saved", description: "Your app preferences have been updated" });
   };
 
   const handleToggle = (key: string, value: boolean, setter: (v: boolean) => void, label: string) => {
     setter(value);
     localStorage.setItem(key, String(value));
     toast({ title: `${label} ${value ? "enabled" : "disabled"}` });
-  };
-
-  const handleMinStockChange = (val: string) => {
-    setDefaultMinStock(val);
-    localStorage.setItem("default_min_stock", val);
-  };
-
-  const handleMinStockSave = () => {
-    const num = parseInt(defaultMinStock);
-    if (isNaN(num) || num < 0) {
-      toast({ title: "Invalid value", description: "Please enter a valid number", variant: "destructive" });
-      return;
-    }
-    localStorage.setItem("default_min_stock", String(num));
-    toast({ title: "Default min stock updated", description: `Default minimum stock set to ${num}` });
   };
 
   const handleExportAll = async () => {
@@ -235,7 +201,7 @@ const Settings = () => {
   };
 
   const selectedCurrency = CURRENCIES.find(c => c.value === currency);
-  const selectedLanguage = LANGUAGES.find(l => l.value === language);
+  
 
   return (
     <div className="p-3 sm:p-6 max-w-[800px] mx-auto space-y-4">
@@ -281,42 +247,45 @@ const Settings = () => {
         </div>
       </div>
 
-      {/* General */}
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
-        <SectionHeader title="General" subtitle="App preferences and regional settings" />
-        <div className="space-y-3">
-          <SettingRow icon={DollarSign} label="Currency" description="Display currency for all amounts">
-            <Select value={currency} onValueChange={handleCurrencyChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
-                <SelectValue>{selectedCurrency?.label}</SelectValue>
+      {/* App Preferences */}
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-5">
+        <div className="flex items-center gap-3">
+          <div className="w-9 h-9 rounded-lg bg-primary/15 flex items-center justify-center">
+            <Shield className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-semibold text-foreground">App Preferences</h2>
+            <p className="text-xs sm:text-sm text-muted-foreground">Configure inventory defaults</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Low Stock Threshold</Label>
+            <Input
+              type="number"
+              min={0}
+              value={defaultMinStock}
+              onChange={e => setDefaultMinStock(e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Currency</Label>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger>
+                <SelectValue>{selectedCurrency ? `${selectedCurrency.value} (${selectedCurrency.symbol})` : currency}</SelectValue>
               </SelectTrigger>
               <SelectContent>
                 {CURRENCIES.map(c => (
-                  <SelectItem key={c.value} value={c.value}>
-                    <span className="font-medium">{c.symbol}</span>
-                    <span className="ml-2">{c.label}</span>
-                  </SelectItem>
+                  <SelectItem key={c.value} value={c.value}>{c.value} ({c.symbol})</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </SettingRow>
-
-          <SettingRow icon={Globe} label="Language" description="Preferred display language">
-            <Select value={language} onValueChange={handleLanguageChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
-                <SelectValue>{selectedLanguage?.label}</SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                {LANGUAGES.map(l => (
-                  <SelectItem key={l.value} value={l.value}>{l.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </SettingRow>
-
-          <SettingRow icon={Clock} label="Date Format" description="How dates are displayed">
-            <Select value={dateFormat} onValueChange={handleDateFormatChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
+          </div>
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Date Format</Label>
+            <Select value={dateFormat} onValueChange={setDateFormat}>
+              <SelectTrigger>
                 <SelectValue>{dateFormat}</SelectValue>
               </SelectTrigger>
               <SelectContent>
@@ -325,21 +294,26 @@ const Settings = () => {
                 ))}
               </SelectContent>
             </Select>
-          </SettingRow>
-
-          <SettingRow icon={Globe} label="Time Zone" description="Your local time zone">
-            <Select value={timezone} onValueChange={handleTimezoneChange}>
-              <SelectTrigger className="w-[160px] sm:w-[200px] shrink-0">
-                <SelectValue>{TIME_ZONES.find(t => t.value === timezone)?.label}</SelectValue>
+          </div>
+          <div className="space-y-2">
+            <Label className="text-foreground font-medium">Items Per Page</Label>
+            <Select value={itemsPerPage} onValueChange={setItemsPerPage}>
+              <SelectTrigger>
+                <SelectValue>{itemsPerPage}</SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {TIME_ZONES.map(t => (
-                  <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                {["10", "25", "50", "100"].map(v => (
+                  <SelectItem key={v} value={v}>{v}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
-          </SettingRow>
+          </div>
         </div>
+
+        <Button onClick={handleSavePreferences} className="gap-2">
+          <Download className="w-4 h-4 rotate-180" />
+          Save Preferences
+        </Button>
       </div>
 
       {/* Notifications */}
@@ -358,33 +332,6 @@ const Settings = () => {
               onCheckedChange={(v) => handleToggle("notif_sales", v, setSalesAlerts, "Sales notifications")}
             />
           </SettingRow>
-        </div>
-      </div>
-
-      {/* Inventory */}
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-4">
-        <SectionHeader title="Inventory" subtitle="Default inventory management settings" />
-        <div className="space-y-3">
-          <div className="flex items-center justify-between p-3 sm:p-4 rounded-lg bg-muted/30 border border-border gap-4">
-            <div className="flex items-center gap-3 min-w-0">
-              <Package className="w-5 h-5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <Label className="text-foreground font-medium">Default Min Stock</Label>
-                <p className="text-xs text-muted-foreground">Default minimum stock level for new products</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Input
-                type="number"
-                min={0}
-                value={defaultMinStock}
-                onChange={e => handleMinStockChange(e.target.value)}
-                className="w-20 text-center"
-              />
-              <Button size="sm" variant="outline" onClick={handleMinStockSave}>Save</Button>
-            </div>
-          </div>
-
           <SettingRow icon={Hash} label="Auto-generate SKU" description="Automatically generate SKU codes for new products">
             <Switch
               checked={autoSku}
