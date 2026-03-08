@@ -39,7 +39,7 @@ const Login = () => {
             <Package className="w-7 h-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Welcome back</h1>
-          <p className="text-muted-foreground mt-1">Sign in to your StockPilot account</p>
+          <p className="text-muted-foreground mt-1">Sign in to your InventPro account</p>
         </div>
 
         <form onSubmit={handleLogin} className="bg-card border border-border rounded-xl p-5 sm:p-6 space-y-4">

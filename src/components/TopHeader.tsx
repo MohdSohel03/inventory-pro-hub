@@ -33,7 +33,7 @@ export function TopHeader({ onMenuClick }: TopHeaderProps) {
   const location = useLocation();
   const { user, signOut } = useAuth();
   const { role } = useRole();
-  const pageInfo = pageTitles[location.pathname] || { title: "StockPilot" };
+  const pageInfo = pageTitles[location.pathname] || { title: "InventPro" };
 
   const { data: profile } = useQuery({
     queryKey: ["profile", user?.id],

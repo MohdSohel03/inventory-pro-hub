@@ -52,7 +52,7 @@ const Signup = () => {
             <Package className="w-7 h-7 text-primary-foreground" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Create account</h1>
-          <p className="text-muted-foreground mt-1">Get started with StockPilot</p>
+          <p className="text-muted-foreground mt-1">Get started with InventPro</p>
         </div>
 
         <form onSubmit={handleSignup} className="bg-card border border-border rounded-xl p-5 sm:p-6 space-y-4">
