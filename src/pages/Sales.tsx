@@ -14,6 +14,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRole } from "@/contexts/RoleContext";
 import { useToast } from "@/hooks/use-toast";
 import { exportToCSV } from "@/lib/export-csv";
+import { exportToPDF } from "@/lib/export-pdf";
 import { useAppSettings } from "@/contexts/AppSettingsContext";
 import { BarcodeScanner } from "@/components/products/BarcodeScanner";
 
