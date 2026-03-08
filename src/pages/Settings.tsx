@@ -139,6 +139,7 @@ const Settings = () => {
     localStorage.setItem("items_per_page", itemsPerPage);
     localStorage.setItem("app_language", language);
     localStorage.setItem("app_timezone", timezone);
+    window.dispatchEvent(new Event("app-settings-changed"));
     toast({ title: "Preferences saved", description: "Your app preferences have been updated" });
   };
 
