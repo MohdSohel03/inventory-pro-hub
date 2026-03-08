@@ -109,8 +109,8 @@ const StaffManagement = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-          {staff.map(s => (
-            <div key={s.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-colors">
+          {staff.map((s, idx) => (
+            <div key={s.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 opacity-0 animate-fade-in-scale" style={{ animationDelay: `${idx * 80}ms` }}>
               <div className="flex justify-between items-start">
                 <div className="min-w-0 flex-1">
                   <h3 className="font-semibold text-foreground text-sm sm:text-base truncate">{s.full_name || "Unnamed"}</h3>

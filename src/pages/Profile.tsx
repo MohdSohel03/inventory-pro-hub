@@ -58,7 +58,7 @@ const Profile = () => {
 
   return (
     <div className="p-3 sm:p-6 max-w-[800px] mx-auto">
-      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-6">
+      <div className="bg-card border border-border rounded-xl p-4 sm:p-6 space-y-6 opacity-0 animate-fade-in-scale">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="relative shrink-0">
             <Avatar className="w-16 h-16 sm:w-20 sm:h-20">

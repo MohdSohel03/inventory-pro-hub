@@ -98,8 +98,8 @@ const Purchases = () => {
               {filtered.length === 0 && (
                 <tr><td colSpan={5} className="py-8 text-center text-muted-foreground">No purchases yet.</td></tr>
               )}
-              {filtered.map(p => (
-                <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+              {filtered.map((p, idx) => (
+                <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 50}ms` }}>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{p.supplier_name}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(p.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{p.items}</td>

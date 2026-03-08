@@ -78,8 +78,8 @@ const Suppliers = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {filtered.map(s => (
-          <div key={s.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-colors">
+        {filtered.map((s, idx) => (
+          <div key={s.id} className="bg-card border border-border rounded-xl p-4 sm:p-5 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 hover:-translate-y-0.5 opacity-0 animate-fade-in-scale" style={{ animationDelay: `${200 + idx * 80}ms` }}>
             <div className="flex justify-between items-start">
               <h3 className="font-semibold text-foreground text-sm sm:text-base">{s.name}</h3>
               {isAdmin && <button onClick={() => setDeleteId(s.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>}

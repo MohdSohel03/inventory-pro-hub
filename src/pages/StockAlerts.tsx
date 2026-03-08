@@ -21,8 +21,8 @@ const StockAlerts = () => {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        {lowStock.map(p => (
-          <div key={p.id} className={`bg-card border rounded-xl p-4 sm:p-5 ${p.stock === 0 ? "border-destructive/40" : "border-warning/40"}`}>
+        {lowStock.map((p, idx) => (
+          <div key={p.id} className={`bg-card border rounded-xl p-4 sm:p-5 opacity-0 animate-fade-in-scale hover:-translate-y-0.5 transition-all duration-300 ${p.stock === 0 ? "border-destructive/40" : "border-warning/40"}`} style={{ animationDelay: `${idx * 80}ms` }}>
             <div className="flex items-start gap-3">
               <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg flex items-center justify-center shrink-0 ${p.stock === 0 ? "bg-destructive/10 text-destructive" : "bg-warning/10 text-warning"}`}>
                 {p.stock === 0 ? <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" /> : <Package className="w-4 h-4 sm:w-5 sm:h-5" />}

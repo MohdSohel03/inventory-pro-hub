@@ -194,8 +194,8 @@ const Sales = () => {
                   </td>
                 </tr>
               )}
-              {filtered.map(s => (
-                <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+              {filtered.map((s, idx) => (
+                <tr key={s.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 50}ms` }}>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">{formatDate(s.date)}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground text-xs sm:text-sm">{s.customer}</td>
                   <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{s.items}</td>

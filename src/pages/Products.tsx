@@ -237,10 +237,10 @@ const Products = () => {
                 {paginated.length === 0 && (
                   <tr><td colSpan={11} className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</td></tr>
                 )}
-                {paginated.map(p => {
+                {paginated.map((p, idx) => {
                   const status = getStatus(p);
                   return (
-                    <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors">
+                    <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 60}ms` }}>
                       <td className="py-2 sm:py-3 px-3 sm:px-4">
                         <div className="w-10 h-10 rounded-lg bg-muted border border-border overflow-hidden flex items-center justify-center">
                           {p.image_url ? (
