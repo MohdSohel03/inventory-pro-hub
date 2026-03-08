@@ -43,11 +43,16 @@ const Sales = () => {
 
   useEffect(() => { fetchData(); }, [user]);
 
-  const filtered = sales.filter(s =>
-    s.customer.toLowerCase().includes(search.toLowerCase()) ||
-    s.date?.includes(search) ||
-    s.payment?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = sales.filter(s => {
+    const matchesSearch = s.customer.toLowerCase().includes(search.toLowerCase()) ||
+      s.date?.includes(search) ||
+      s.payment?.toLowerCase().includes(search.toLowerCase());
+    const saleDate = s.date ? new Date(s.date) : null;
+    const matchesFrom = !dateFrom || (saleDate && saleDate >= new Date(dateFrom.setHours(0, 0, 0, 0)));
+    const matchesTo = !dateTo || (saleDate && saleDate <= new Date(dateTo.setHours(23, 59, 59, 999)));
+    return matchesSearch && matchesFrom && matchesTo;
+  });
+  const hasDateFilter = dateFrom || dateTo;
   const subtotal = items.reduce((s, i) => s + i.quantity * i.price, 0);
   const total = subtotal * (1 - discount / 100);
 
