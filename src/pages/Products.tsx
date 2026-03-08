@@ -89,7 +89,7 @@ const Products = () => {
   };
 
   const openEdit = (p: any) => {
-    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "", image_url: p.image_url || null });
+    setForm({ name: p.name, sku: p.sku, category: p.category, stock: p.stock, cost_price: Number(p.cost_price), selling_price: Number(p.selling_price), min_stock: p.min_stock, location: p.location || "", image_url: p.image_url || null, barcode: p.barcode || "" });
     setEditProduct(p);
     setShowAdd(true);
   };
