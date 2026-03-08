@@ -182,7 +182,7 @@ const Products = () => {
 
       {/* Grid View */}
       {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4">
           {paginated.length === 0 && (
             <div className="col-span-full py-12 text-center text-muted-foreground">No products yet. Add your first product!</div>
           )}
@@ -190,26 +190,26 @@ const Products = () => {
             const status = getStatus(p);
             return (
               <div key={p.id} className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-lg hover:shadow-primary/5 transition-all duration-300 group opacity-0 animate-fade-in-scale hover:-translate-y-1" style={{ animationDelay: `${200 + idx * 80}ms` }}>
-                <div className="aspect-[4/3] bg-muted relative overflow-hidden">
+                <div className="aspect-square sm:aspect-[4/3] bg-muted relative overflow-hidden">
                   {p.image_url ? (
                     <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <ImageIcon className="w-12 h-12 text-muted-foreground/40" />
+                      <ImageIcon className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground/40" />
                     </div>
                   )}
                   {isAdmin && (
-                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button onClick={() => openEdit(p)} className="p-1.5 rounded-md bg-background/80 backdrop-blur-sm hover:bg-background text-muted-foreground hover:text-foreground transition-colors">
-                        <Pencil className="w-3.5 h-3.5" />
+                    <div className="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 flex gap-1 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button onClick={() => openEdit(p)} className="p-1 sm:p-1.5 rounded-md bg-background/80 backdrop-blur-sm hover:bg-background text-muted-foreground hover:text-foreground transition-colors">
+                        <Pencil className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       </button>
-                      <button onClick={() => setDeleteId(p.id)} className="p-1.5 rounded-md bg-background/80 backdrop-blur-sm hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors">
-                        <Trash2 className="w-3.5 h-3.5" />
+                      <button onClick={() => setDeleteId(p.id)} className="p-1 sm:p-1.5 rounded-md bg-background/80 backdrop-blur-sm hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors">
+                        <Trash2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       </button>
                     </div>
                   )}
-                  <div className="absolute bottom-2 left-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                  <div className="absolute bottom-1.5 left-1.5 sm:bottom-2 sm:left-2">
+                    <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium ${
                       status === "In Stock" ? "bg-emerald-500/90 text-white" :
                       status === "Low Stock" ? "bg-amber-500/90 text-white" :
                       "bg-red-500/90 text-white"
@@ -218,20 +218,20 @@ const Products = () => {
                     </span>
                   </div>
                 </div>
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="font-semibold text-foreground truncate">{p.name}</h3>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium shrink-0">{p.category}</span>
+                <div className="p-2.5 sm:p-4">
+                  <div className="flex items-start justify-between gap-1 sm:gap-2 mb-1">
+                    <h3 className="font-semibold text-foreground truncate text-xs sm:text-sm">{p.name}</h3>
+                    <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium shrink-0 hidden sm:inline">{p.category}</span>
                   </div>
-                  <p className="text-xs text-muted-foreground font-mono mb-3">SKU: {p.sku}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground font-mono mb-2 sm:mb-3">SKU: {p.sku}</p>
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-muted-foreground">Quantity</p>
-                      <p className="text-lg font-bold text-foreground">{p.stock}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Qty</p>
+                      <p className="text-sm sm:text-lg font-bold text-foreground">{p.stock}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs text-muted-foreground">Price</p>
-                      <p className="text-lg font-bold text-foreground">{formatCurrency(Number(p.selling_price))}</p>
+                      <p className="text-[10px] sm:text-xs text-muted-foreground">Price</p>
+                      <p className="text-sm sm:text-lg font-bold text-foreground">{formatCurrency(Number(p.selling_price))}</p>
                     </div>
                   </div>
                 </div>
@@ -240,62 +240,112 @@ const Products = () => {
           })}
         </div>
       ) : (
-        /* List View */
-        <div className="bg-card border border-border rounded-xl overflow-hidden opacity-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm min-w-[700px]">
-              <thead>
-                <tr className="border-b border-border">
-                  {["", "Product", "SKU", "Category", "Qty", "Cost", "Price", "Min", "Status", "Location", ...(isAdmin ? ["Actions"] : [])].map(h => (
-                    <th key={h || "img"} className="text-left py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {paginated.length === 0 && (
-                  <tr><td colSpan={11} className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</td></tr>
-                )}
-                {paginated.map((p, idx) => {
-                  const status = getStatus(p);
-                  return (
-                    <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 60}ms` }}>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4">
-                        <div className="w-10 h-10 rounded-lg bg-muted border border-border overflow-hidden flex items-center justify-center">
-                          {p.image_url ? (
-                            <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
-                          ) : (
-                            <ImageIcon className="w-4 h-4 text-muted-foreground" />
-                          )}
-                        </div>
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-medium text-foreground">{p.name}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-muted-foreground text-xs">{p.sku}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4">{p.category}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{p.stock}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs">{formatCurrency(Number(p.cost_price))}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 font-mono text-xs">{formatCurrency(Number(p.selling_price))}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-center">{p.min_stock}</td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4">
-                        <span className={status === "In Stock" ? "status-in-stock" : status === "Low Stock" ? "status-low-stock" : "status-out-of-stock"}>
-                          • {status}
-                        </span>
-                      </td>
-                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-muted-foreground text-xs">{p.location}</td>
-                      {isAdmin && (
-                        <td className="py-2 sm:py-3 px-3 sm:px-4">
-                          <div className="flex gap-1">
-                            <button onClick={() => openEdit(p)} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
-                            <button onClick={() => setDeleteId(p.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+        /* List View - Card-based on mobile, table on desktop */
+        <>
+          {/* Mobile card list */}
+          <div className="flex flex-col gap-2 sm:hidden">
+            {paginated.length === 0 && (
+              <div className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</div>
+            )}
+            {paginated.map((p, idx) => {
+              const status = getStatus(p);
+              return (
+                <div key={p.id} className="bg-card border border-border rounded-xl p-3 flex items-center gap-3 opacity-0 animate-fade-in" style={{ animationDelay: `${200 + idx * 60}ms` }}>
+                  <div className="w-11 h-11 rounded-lg bg-muted border border-border overflow-hidden flex items-center justify-center shrink-0">
+                    {p.image_url ? (
+                      <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="font-medium text-foreground text-sm truncate">{p.name}</p>
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium shrink-0 ${
+                        status === "In Stock" ? "bg-emerald-500/15 text-emerald-400" :
+                        status === "Low Stock" ? "bg-amber-500/15 text-amber-400" :
+                        "bg-red-500/15 text-red-400"
+                      }`}>
+                        {status === "In Stock" ? "In" : status === "Low Stock" ? "Low" : "Out"}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3 mt-0.5">
+                      <span className="text-[11px] text-muted-foreground font-mono">{p.sku}</span>
+                      <span className="text-[11px] text-muted-foreground">{p.category}</span>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-bold text-foreground">{p.stock}</p>
+                    <p className="text-[11px] text-muted-foreground">{formatCurrency(Number(p.selling_price))}</p>
+                  </div>
+                  {isAdmin && (
+                    <div className="flex flex-col gap-1 shrink-0">
+                      <button onClick={() => openEdit(p)} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => setDeleteId(p.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop table */}
+          <div className="hidden sm:block bg-card border border-border rounded-xl overflow-hidden opacity-0 animate-fade-in" style={{ animationDelay: "200ms" }}>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-border">
+                    {["", "Product", "SKU", "Category", "Qty", "Cost", "Price", "Min", "Status", "Location", ...(isAdmin ? ["Actions"] : [])].map(h => (
+                      <th key={h || "img"} className="text-left py-3 px-4 text-muted-foreground font-medium text-xs uppercase tracking-wider">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.length === 0 && (
+                    <tr><td colSpan={11} className="py-8 text-center text-muted-foreground">No products yet. Add your first product!</td></tr>
+                  )}
+                  {paginated.map((p, idx) => {
+                    const status = getStatus(p);
+                    return (
+                      <tr key={p.id} className="border-b border-border/50 hover:bg-muted/30 transition-colors opacity-0 animate-fade-in" style={{ animationDelay: `${250 + idx * 60}ms` }}>
+                        <td className="py-3 px-4">
+                          <div className="w-10 h-10 rounded-lg bg-muted border border-border overflow-hidden flex items-center justify-center">
+                            {p.image_url ? (
+                              <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                            ) : (
+                              <ImageIcon className="w-4 h-4 text-muted-foreground" />
+                            )}
                           </div>
                         </td>
-                      )}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                        <td className="py-3 px-4 font-medium text-foreground">{p.name}</td>
+                        <td className="py-3 px-4 font-mono text-muted-foreground text-xs">{p.sku}</td>
+                        <td className="py-3 px-4">{p.category}</td>
+                        <td className="py-3 px-4 text-center">{p.stock}</td>
+                        <td className="py-3 px-4 font-mono text-xs">{formatCurrency(Number(p.cost_price))}</td>
+                        <td className="py-3 px-4 font-mono text-xs">{formatCurrency(Number(p.selling_price))}</td>
+                        <td className="py-3 px-4 text-center">{p.min_stock}</td>
+                        <td className="py-3 px-4">
+                          <span className={status === "In Stock" ? "status-in-stock" : status === "Low Stock" ? "status-low-stock" : "status-out-of-stock"}>
+                            • {status}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-muted-foreground text-xs">{p.location}</td>
+                        {isAdmin && (
+                          <td className="py-3 px-4">
+                            <div className="flex gap-1">
+                              <button onClick={() => openEdit(p)} className="p-1.5 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+                              <button onClick={() => setDeleteId(p.id)} className="p-1.5 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                            </div>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        </>
       )}
 
       {/* Pagination */}
