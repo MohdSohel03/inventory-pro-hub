@@ -267,6 +267,21 @@ const Sales = () => {
                   <Button variant="outline" size="sm" onClick={addItem}><Plus className="w-3 h-3 mr-1" />Add</Button>
                 </div>
               </div>
+              <div className="flex gap-2 mb-3">
+                <Input
+                  placeholder="Type barcode or SKU and press Enter"
+                  onKeyDown={e => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      const code = (e.target as HTMLInputElement).value.trim();
+                      if (code) {
+                        handleSaleScan(code);
+                        (e.target as HTMLInputElement).value = "";
+                      }
+                    }
+                  }}
+                />
+              </div>
               <div className="space-y-2">
                 {items.map((item, i) => {
                   const selectedProduct = products.find(p => p.name === item.product);
