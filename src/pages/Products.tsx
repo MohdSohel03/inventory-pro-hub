@@ -39,6 +39,7 @@ const Products = () => {
   const [page, setPage] = useState(1);
   const [saving, setSaving] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
+  const [showFormScanner, setShowFormScanner] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "list">("list");
   const perPage = viewMode === "grid" ? 9 : 5;
 
