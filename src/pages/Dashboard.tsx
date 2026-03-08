@@ -163,7 +163,7 @@ const Dashboard = () => {
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={salesTrend}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="month" stroke="hsl(var(--muted-foreground))" fontSize={10} tick={{ fontSize: 10 }} />
+                <XAxis dataKey="day" stroke="hsl(var(--muted-foreground))" fontSize={10} tick={{ fontSize: 10 }} />
                 <YAxis stroke="hsl(var(--muted-foreground))" fontSize={10} tickFormatter={(v) => `${currencySymbol}${v / 1000}k`} width={50} />
                 <Tooltip contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: 8, fontSize: 12 }} />
                 <Line type="monotone" dataKey="sales" stroke="hsl(var(--chart-1))" strokeWidth={2} dot={false} />
