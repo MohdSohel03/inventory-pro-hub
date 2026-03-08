@@ -62,7 +62,7 @@ const Sales = () => {
 
   const addItem = () => setItems([...items, { product: "", quantity: 1, price: 0 }]);
   const removeItem = (idx: number) => setItems(items.filter((_, i) => i !== idx));
-  const updateItem = (idx: number, field: string, value: any) => setItems(items.map((item, i) => i === idx ? { ...item, [field]: value } : item));
+  const updateItem = (idx: number, updates: Record<string, any>) => setItems(prev => prev.map((item, i) => i === idx ? { ...item, ...updates } : item));
 
   const handleSaleScan = (code: string) => {
     const found = products.find(p => p.barcode === code || p.sku.toLowerCase() === code.toLowerCase());
@@ -70,7 +70,7 @@ const Sales = () => {
       // Check if already in items list
       const existingIdx = items.findIndex(i => i.product === found.name);
       if (existingIdx >= 0) {
-        updateItem(existingIdx, "quantity", items[existingIdx].quantity + 1);
+        updateItem(existingIdx, { quantity: items[existingIdx].quantity + 1 });
       } else {
         // Add to first empty slot or append
         const emptyIdx = items.findIndex(i => !i.product);
@@ -274,14 +274,14 @@ const Sales = () => {
                     <div key={i}>
                       <div className="flex flex-col sm:flex-row gap-2 sm:items-end">
                         <div className="flex-1">
-                          <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, "product", v); if (p) updateItem(i, "price", Number(p.selling_price)); }}>
+                          <Select value={item.product} onValueChange={v => { const p = products.find(x => x.name === v); updateItem(i, { product: v, ...(p ? { price: Number(p.selling_price) } : {}) }); }}>
                             <SelectTrigger><SelectValue placeholder="Select product" /></SelectTrigger>
                             <SelectContent>{products.map(p => <SelectItem key={p.id} value={p.name}>{p.name} (Stock: {p.stock})</SelectItem>)}</SelectContent>
                           </Select>
                         </div>
                         <div className="flex gap-2 items-end">
-                          <Input type="number" className="w-20" placeholder="Qty" min={1} value={item.quantity} onChange={e => updateItem(i, "quantity", +e.target.value)} />
-                          <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, "price", +e.target.value)} />
+                          <Input type="number" className="w-20" placeholder="Qty" min={1} value={item.quantity} onChange={e => updateItem(i, { quantity: +e.target.value })} />
+                          <Input type="number" className="w-28" placeholder="Price" value={item.price} onChange={e => updateItem(i, { price: +e.target.value })} />
                           {items.length > 1 && <button onClick={() => removeItem(i)} className="p-2 text-muted-foreground hover:text-destructive"><Trash2 className="w-4 h-4" /></button>}
                         </div>
                       </div>
